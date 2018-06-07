@@ -6,7 +6,7 @@
 """
 
 
-class Credentials:
+class SDSAuthentication:
     password = 'root'
     username = 'Admin'
 
