@@ -20,6 +20,8 @@ class SDSServer:
     conn, addr = s.accept()
     print('Connected by', addr)
     while 1:
+        s.send(b'hello client')
         data = conn.recv(1024)
         if not data: break
-        conn.sendall(data)
+        else:
+            print(data)

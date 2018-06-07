@@ -7,8 +7,10 @@
 """
 
 import socket
+import time
 
 from Client import SDSMenu
+from SDSPdu import SDSPdu
 
 
 class SDSClient:
@@ -16,8 +18,12 @@ class SDSClient:
     PORT = 50007  # The same port as used by the server
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((HOST, PORT))
+    BUFFER = 1024
     SDSMenu.print_instruction()
-    s.sendall(b'Hello, world')
-    data = s.recv(1024)
-    s.close()
-    print('Received', repr(data))
+    packet_assembly = SDSPdu.SDSPacketAssembly()
+
+    while 1:
+        data = s.recv(BUFFER)
+        print(data)
+        time.sleep(2)
+        s.send(b'hello server')
