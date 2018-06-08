@@ -46,17 +46,17 @@ class BSCAPdu:
         self.__HEADER = SDSHeader()
         self.__MESSAGE_FORMAT = '12s q 26s' + str(self.__SIZE_OF_DATA) + 's'  # set size for PDU
 
-    def generate_byte(self, request, data_chunk):
+    def generate_byte(self, message_type, data_chunk):
         """
-
-        :param string request: The request field
+        Used to convert different pdu parts to bytes and final tuning before returning it for sending
+        :param string message_type: The request field
         :param string data_chunk: The data to be sent
-        :return: None
+        :return Struct: pdu packed
         """
 
         # verify that the parameters are strings
         try:
-            request = request.decode()
+            message_type = message_type.decode()
         except AttributeError:
             pass
 
@@ -65,28 +65,27 @@ class BSCAPdu:
         except AttributeError:
             pass
 
-        # print('{} size of data '.format(self.__SIZE_OF_DATA))
+        print('{} size of data '.format(self.__SIZE_OF_DATA))
         s = struct.Struct(self.__MESSAGE_FORMAT)
         self.__PDU_SIZE = s.size
-        # print('size of struct {}'.format(s.size))
-        # print('----getting headers---')
-        req, checksum, timestamp = self.header.get_header(request, data_chunk)
+        print('size of struct {}'.format(s.size))
+        print('----getting headers---')
+        message_type, checksum, timestamp = self.header.get_header(message_type, data_chunk)
         data_chunk = data_chunk.encode()  # convert the data chuck to bytes
-        # print('---done-----')
-        # print('req {} checksum {} timestamp {} data {}'.format(req, checksum, timestamp, data_chunk))
-        pdu = (req, checksum, timestamp, data_chunk)
-        # print(pdu)
+        print('---done-----')
+        print('message_type {} checksum {} timestamp {} data {}'.format(message_type, checksum, timestamp, data_chunk))
+        pdu = (message_type, checksum, timestamp, data_chunk)
+        print(pdu)
         pdu_packed = s.pack(*pdu)
-        # print(pdu_packed)
-        # print(binascii.hexlify(pdu_packed))
+        print(pdu_packed)
+        print(binascii.hexlify(pdu_packed))
 
-        # print(s.unpack(pdu_packed))
+        print(s.unpack(pdu_packed))
 
         return pdu_packed
 
     def send(self, request, data):
-        # print("In send under BSCAPdu")
-        # print('data :{} request: {}'.format(data, request))
+        print('data :{} request: {}'.format(data, request))
         try:
             data = data.decode()
         except AttributeError:
@@ -103,12 +102,11 @@ class BSCAPdu:
         # since the checksum and timestamp will be different
         for d in data_arr:
             pdu = self.generate_byte(request, d)  # returns the pdu in byte
-            # print('sending')
-            # print(pdu)
+            print('sending')
+            print(pdu)
 
             print('sending')
 
-            # print(pdu)
 
             self.__SOCKET.send(pdu)
 
