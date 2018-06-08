@@ -12,8 +12,7 @@
 import socket
 import sys
 
-from SDSDocument import SDSDocument
-from SDSPdu import BSCAPdu
+from SDSPdu import SDSPdu
 
 
 class Client():
@@ -29,7 +28,7 @@ class Client():
     __BUFFER_SIZE = 100
     __SIZE_OF_HEADER = 50
     __SIZE_OF_DATA = __BUFFER_SIZE - __SIZE_OF_HEADER
-    __BSCAPduClient = None
+    __sds_pdu_client = None
 
     def __init__(self, host_name=__HOST_NAME, ip_address=__IP_ADDRESS, port=__PORT):
         """
@@ -41,7 +40,7 @@ class Client():
         self.__HOST_NAME = host_name
         self.__IP_ADDRESS = ip_address
         self.__PORT = port
-        self.__BSCAPduClient = BSCAPdu(self.__CLIENT_SOCKET, self.__BUFFER_SIZE,
+        self.__sds_pdu_client = SDSPdu(self.__CLIENT_SOCKET, self.__BUFFER_SIZE,
                                        self.__SIZE_OF_HEADER)  # create a sending and receiving object for the client
 
     def start(self):
@@ -58,26 +57,20 @@ class Client():
             print(err.args)
             sys.exit(1)
 
-        doc_obj = SDSDocument()
-        m_doc = doc_obj.get_document()
-
-        self.__BSCAPduClient.send('CONNNECT', m_doc)
-        print("----done sending----")
         print("----Now receiving----")
 
         while True:
-            data_binary = self.__BSCAPduClient.receive()  # decode data when it is received
+            data_binary = self.__sds_pdu_client.receive()  # decode data when it is received
             # print(data_binary)
-            request, checksum, timestamp, data = data_binary
-            if self.__BSCAPduClient.error_check_crc(data_binary):
-                print(request, checksum, timestamp, data)
-                request = request.decode()
-                timestamp = timestamp.decode()
-                data = data.decode()
-                print(request, timestamp, checksum, data)
+            message_type, checksum, timestamp, data = data_binary
+            print(message_type, checksum, timestamp, data)
+            message_type = message_type.decode()
+            timestamp = timestamp.decode()
+            data = data.decode()
+            print(message_type, timestamp, checksum, data)
 
-            else:
-                print('We had an error with the checksum')
+
+
 
     def get_server_name(self):
         return self.__HOST_NAME

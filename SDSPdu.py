@@ -15,9 +15,9 @@ import struct
 from SDSHeader import SDSHeader
 
 
-class BSCAPdu:
+class SDSPdu:
     """
-    The BSCAPdu class creates an instance needed to send messages across sockets
+    The SDSPdu class creates an instance needed to send messages across sockets
 
     """
 
@@ -34,7 +34,7 @@ class BSCAPdu:
 
     def __init__(self, socket, buffer_size, header_size):
         """
-        When an instance of BSCAPdu is created, we assign the header and the data None value
+        When an instance of SDSPdu is created, we assign the header and the data None value
         """
         self.__data = None
         self.__BUFFER_SIZE = buffer_size
@@ -187,7 +187,7 @@ class BSCAPdu:
 # doc = SDSDocument()
 # document.txt = doc.get_document()
 #
-# test = BSCAPdu(None, 100, 50)
+# test = SDSPdu(None, 100, 50)
 #
 # arr = test.chunk_messages(document.txt, 50)
 # print(len(arr))

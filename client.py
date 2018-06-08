@@ -5,7 +5,7 @@ import socket
 import sys
 
 from SDSDocument import BSCADocument
-from SDSPdu import BSCAPdu
+from SDSPdu import SDSPdu
 
 
 class Client():
@@ -33,8 +33,8 @@ class Client():
         self.__HOST_NAME = host_name
         self.__IP_ADDRESS = ip_address
         self.__PORT = port
-        self.__BSCAPduClient = BSCAPdu(self.__CLIENT_SOCKET, self.__BUFFER_SIZE,
-                                       self.__SIZE_OF_HEADER)  # create a sending and receiving object for the client
+        self.__BSCAPduClient = SDSPdu(self.__CLIENT_SOCKET, self.__BUFFER_SIZE,
+                                      self.__SIZE_OF_HEADER)  # create a sending and receiving object for the client
 
     def start(self):
         """

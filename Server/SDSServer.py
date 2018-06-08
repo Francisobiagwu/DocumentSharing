@@ -17,7 +17,7 @@ import socket
 import threading
 
 from SDSDocument import SDSDocument
-from SDSPdu import BSCAPdu
+from SDSPdu import SDSPdu
 
 
 class Server:
@@ -81,8 +81,8 @@ class Server:
         m_doc = doc_object.get_document()
 
         client_thread_name = threading.current_thread().getName()
-        pdu_s = BSCAPdu(client_socket, self.__BUFFER_SIZE, self.__HEADER_SIZE)
-        pdu_r = BSCAPdu(client_socket, self.__BUFFER_SIZE, self.__HEADER_SIZE)
+        pdu_s = SDSPdu(client_socket, self.__BUFFER_SIZE, self.__HEADER_SIZE)
+        pdu_r = SDSPdu(client_socket, self.__BUFFER_SIZE, self.__HEADER_SIZE)
 
         send_PDU = threading.Thread(target=self.send_m, args=(m_doc, client_thread_name, pdu_s))
         recv_m = threading.Thread(target=self.recv_m, args=(client_socket, client_thread_name, pdu_r))
