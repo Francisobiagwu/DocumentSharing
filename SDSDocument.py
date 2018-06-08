@@ -6,7 +6,7 @@ __version__ = "1.0"
 __email__ = "francis.c.obiagwu.civ@mail.mil"
 
 
-class BSCADocument:
+class SDSDocument:
     __default_path = "document"
 
     def __init__(self, path=__default_path):

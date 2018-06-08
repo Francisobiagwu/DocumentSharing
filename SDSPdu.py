@@ -70,7 +70,7 @@ class BSCAPdu:
         self.__PDU_SIZE = s.size
         print('size of struct {}'.format(s.size))
         print('----getting headers---')
-        message_type, checksum, timestamp = self.header.get_header(message_type, data_chunk)
+        message_type, checksum, timestamp, data = self.__HEADER.get_header(message_type, data_chunk)
         data_chunk = data_chunk.encode()  # convert the data chuck to bytes
         print('---done-----')
         print('message_type {} checksum {} timestamp {} data {}'.format(message_type, checksum, timestamp, data_chunk))
@@ -176,16 +176,16 @@ class BSCAPdu:
 
         print(data)
 
-# from BSCADocument import BSCADocument
-#
-# doc = BSCADocument()
-# document = doc.get_document()
-#
-#
-# test = BSCAPdu(None, 100, 50)
-#
-# arr  = test.chunk_messages(document, 50)
-# print(len(arr))
-#
-# for item in arr:
-#     test.generate_byte('CONNECT', item)
+
+from SDSDocument import SDSDocument
+
+doc = SDSDocument()
+document = doc.get_document()
+
+test = BSCAPdu(None, 100, 50)
+
+arr = test.chunk_messages(document, 50)
+print(len(arr))
+
+for item in arr:
+    test.generate_byte('CONNECT', item)
