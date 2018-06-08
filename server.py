@@ -1,12 +1,4 @@
-"""
-@author: Francis Obiagwu
-@software: SecureDocumentSharing
-@file: SDSServer.py
-@description: This is the server side that services client request
-@time: 6/6/18 6:44 PM
-"""
-
-# !/usr/bin/env python
+#!/usr/bin/env python
 
 __author__ = "Francis Obiagwu"
 __copyright__ = "Copyright 2017, GSCE IDS Project"

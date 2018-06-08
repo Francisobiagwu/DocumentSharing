@@ -10,3 +10,8 @@ class MessageType:
     """
     This is the class used to create various messages used to send pdu back and fourth
     """
+    CONNECT = b'CONNECT'
+    AUTHORIZE = b'AUTHORIZE'
+    SECTION_EDIT = b'SECTION_EDIT'
+    COMMIT = b'COMMIT'
+    CLOSE = b'CLOSE'

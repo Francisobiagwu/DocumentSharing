@@ -5,10 +5,10 @@
 @time: 6/6/18 7:21 PM
 """
 
-import datetime
 import struct
 
-print(datetime.datetime.now())
+
+# print(datetime.datetime.now())
 
 class SDSPdu:
     message_type_len = '12s'
@@ -21,7 +21,8 @@ class SDSPdu:
 
     format = message_type_len + space + timestamp + space + checksum_len + space + data + space
     s = struct.Struct(format)
-    print(format)
+
+    # print(format)
 
     class SDSPacketAssembly:
         message_type = None
@@ -57,5 +58,5 @@ class SDSPdu:
     def pack(self, tuple_pdu):
         return self.s.pack(*tuple_pdu)
 
-
-sds = SDSPdu()
+#
+# sds = SDSPdu()

@@ -10,3 +10,11 @@ import Server.SDSAuthentication
 t = Server.SDSAuthentication.SDSAuthentication()
 print(t.get_password())
 print(t.get_username())
+
+t.set_password("Password")
+t.set_username("Chukwudi")
+print(t.get_username(), t.get_password())
+
+from Server import SDSServer
+
+s = SDSServer.SDSServer().start()

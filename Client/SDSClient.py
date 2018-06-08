@@ -7,9 +7,9 @@
 """
 
 import socket
-import time
+import sys
 
-from Client import SDSMenu
+from Client import SDSClientInfo
 from SDSPdu import SDSPdu
 
 
@@ -17,13 +17,19 @@ class SDSClient:
     HOST = 'localhost'  # The remote host
     PORT = 50007  # The same port as used by the server
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((HOST, PORT))
-    BUFFER = 1024
-    SDSMenu.print_instruction()
-    packet_assembly = SDSPdu.SDSPacketAssembly()
+    SDSClientInfo.start_info()
+    try:
+        s.connect((HOST, PORT))
+        BUFFER = 1024
+        SDSClientInfo.print_instruction()
+        packet_assembly = SDSPdu.SDSPacketAssembly()
 
-    while 1:
-        data = s.recv(BUFFER)
-        print(data)
-        time.sleep(2)
-        s.send(b'hello server')
+        while 1:
+            data = s.recv(BUFFER)
+            print(data)
+            s.send(b'hello server')
+
+
+    except ConnectionRefusedError as err:
+        print('Server not started')
+        sys.exit(1)
