@@ -1,3 +1,4 @@
+# !/usr/bin/env python
 """
 @author: Francis Obiagwu
 @software: SecureDocumentSharing
@@ -5,9 +6,6 @@
 @description: Client class that request for service from the server
 @time: 6/6/18 6:24 PM
 """
-
-# !/usr/bin/env python
-
 
 import socket
 import sys
@@ -70,9 +68,6 @@ class Client():
             timestamp = timestamp.decode()
             data = data.decode()
             print(message_type, timestamp, checksum, data)
-
-
-
 
     def get_server_name(self):
         return self.__HOST_NAME
