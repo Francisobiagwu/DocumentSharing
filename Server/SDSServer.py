@@ -16,6 +16,7 @@ __email__ = "francis.c.obiagwu.civ@mail.mil"
 import socket
 import threading
 
+from SDSDocument import SDSDocument
 from SDSPdu import BSCAPdu
 
 
@@ -76,7 +77,7 @@ class Server:
         :return: None
         """
 
-        doc_object = BSCADocument()
+        doc_object = SDSDocument()
         m_doc = doc_object.get_document()
 
         client_thread_name = threading.current_thread().getName()

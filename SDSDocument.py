@@ -7,7 +7,7 @@ __email__ = "francis.c.obiagwu.civ@mail.mil"
 
 
 class SDSDocument:
-    __default_path = "document"
+    __default_path = "document.txt"
 
     def __init__(self, path=__default_path):
         self.__path = self.__default_path
@@ -15,9 +15,10 @@ class SDSDocument:
     def get_document(self):
         try:
             with open(self.__path, 'r', encoding='utf-8') as file:
-                print('about getting document')
+                print('about getting document.txt')
                 document = file.read()
                 return document
 
         except (FileNotFoundError, FileExistsError) as err:
             print(err.args)
+            print('the document.txt was not found')

@@ -98,17 +98,23 @@ class BSCAPdu:
         self.__data = data
         data_arr = self.chunk_messages(data)  # return the data array
 
-        # for every data_chunk in the array, send with different header,
-        # since the checksum and timestamp will be different
-        for d in data_arr:
-            pdu = self.generate_byte(request, d)  # returns the pdu in byte
-            print('sending')
-            print(pdu)
+        if data_arr is not None:
+            # for every data_chunk in the array, send with different header,
+            # since the checksum and timestamp will be different
+            for d in data_arr:
+                pdu = self.generate_byte(request, d)  # returns the pdu in byte
+                print('sending')
+                print(pdu)
 
-            print('sending')
+                print('sending')
+
+                self.__SOCKET.send(pdu)
+
+        else:
+            print('The array returned from chuck message is None')
 
 
-            self.__SOCKET.send(pdu)
+
 
     def chunk_messages(self, data, no_chunks=None):
         """
@@ -134,8 +140,8 @@ class BSCAPdu:
         s = struct.Struct(self.__MESSAGE_FORMAT)
         # print('Size : {}'.format(s.size))
         try:
-            request, checksum, timestamp, data_chunk = s.unpack(binary_data)
-            request = request.decode('unicode_escape').encode('utf-8')
+            message_type, checksum, timestamp, data_chunk = s.unpack(binary_data)
+            message_type = message_type.decode('unicode_escape').encode('utf-8')
             timestamp = timestamp.decode('unicode_escape').encode('utf-8')
             data_chunk = data_chunk.decode('unicode_escape').encode('utf-8')
 
@@ -148,7 +154,7 @@ class BSCAPdu:
                   'size of heaer: {}\n'
                   '\n{}'.format(s.size, self.__SIZE_OF_DATA, self.__HEADER_SIZE, err.args))
 
-        return request, checksum, timestamp, data_chunk
+        return message_type, checksum, timestamp, data_chunk
 
     def get_buffer_size(self):
         return self.__BUFFER_SIZE
@@ -179,11 +185,11 @@ class BSCAPdu:
 # from SDSDocument import SDSDocument
 #
 # doc = SDSDocument()
-# document = doc.get_document()
+# document.txt = doc.get_document()
 #
 # test = BSCAPdu(None, 100, 50)
 #
-# arr = test.chunk_messages(document, 50)
+# arr = test.chunk_messages(document.txt, 50)
 # print(len(arr))
 #
 # for item in arr:
