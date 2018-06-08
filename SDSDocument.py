@@ -7,11 +7,17 @@ __email__ = "francis.c.obiagwu.civ@mail.mil"
 
 
 class SDSDocument:
-    __default_path = "SecureDocumentSharing/document.txt"
+    import os
+
+    __default_path = os.path.abspath("document.txt")
     __path = None
 
-    def __init__(self, path =__default_path):
-        self.__path = self.__default_path
+    def __init__(self, path=__default_path):
+        if path is None:  # is during the initialization there no path is specified, then use the default path
+            self.__path = self.__default_path
+
+        else:  # if the during the initialization, the user specified a path, then use the specified path
+            self.__path = path
 
     def get_document(self):
         try:
