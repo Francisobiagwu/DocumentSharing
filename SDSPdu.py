@@ -28,6 +28,7 @@ class BSCAPdu:
     __SOCKET = ''  # socket class
     __PDU_SIZE = ''  # pdu size
     __MESSAGE_FORMAT = ''  # message format used for the struct, this is used place pdu parts appropriately
+    __HEADER = ''  # used to create header parts
 
     # __error_checker = SDSHeader()
 
@@ -42,7 +43,7 @@ class BSCAPdu:
         # the size of the data is the difference between buffer size and header size
         self.__SIZE_OF_DATA = self.__BUFFER_SIZE - self.__HEADER_SIZE
         self.__SOCKET = socket
-        self.header = SDSHeader()
+        self.__HEADER = SDSHeader()
         self.__MESSAGE_FORMAT = '12s q 26s' + str(self.__SIZE_OF_DATA) + 's'  # set size for PDU
 
     def generate_byte(self, request, data_chunk):
