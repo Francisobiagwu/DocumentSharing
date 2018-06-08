@@ -176,16 +176,15 @@ class BSCAPdu:
 
         print(data)
 
-
-from SDSDocument import SDSDocument
-
-doc = SDSDocument()
-document = doc.get_document()
-
-test = BSCAPdu(None, 100, 50)
-
-arr = test.chunk_messages(document, 50)
-print(len(arr))
-
-for item in arr:
-    test.generate_byte('CONNECT', item)
+# from SDSDocument import SDSDocument
+#
+# doc = SDSDocument()
+# document = doc.get_document()
+#
+# test = BSCAPdu(None, 100, 50)
+#
+# arr = test.chunk_messages(document, 50)
+# print(len(arr))
+#
+# for item in arr:
+#     test.generate_byte('CONNECT', item)
