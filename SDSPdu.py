@@ -131,7 +131,6 @@ class SDSPdu:
         return arr
 
     def receive(self):
-        print('Receiving....')
         binary_data = self.__SOCKET.recv(self.__BUFFER_SIZE)
 
         s = struct.Struct(self.__MESSAGE_FORMAT)

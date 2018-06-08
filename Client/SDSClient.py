@@ -61,14 +61,15 @@ class Client():
             data_binary = self.__sds_pdu_client.receive()  # decode data when it is received
             # print(data_binary)
             # call the function that will remove excess padding and then print
-            print(data_binary)
+            # print(data_binary)
 
             message_type, checksum, timestamp, data = self.__sds_pdu_client.remove_pdu_padding(data_binary)
-            print(message_type, checksum, timestamp, data)
+            # print(message_type, checksum, timestamp, data)
             message_type = message_type.decode()
             timestamp = timestamp.decode()
             data = data.decode()
-            print(message_type, timestamp, checksum, data)
+            # print(message_type, timestamp, checksum, data)
+            print(data, end='')
 
     def get_server_name(self):
         return self.__HOST_NAME
