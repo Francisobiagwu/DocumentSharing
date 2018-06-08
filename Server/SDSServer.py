@@ -16,7 +16,6 @@ __email__ = "francis.c.obiagwu.civ@mail.mil"
 import socket
 import threading
 
-from SDSDocument import BSCADocument
 from SDSPdu import BSCAPdu
 
 
@@ -107,8 +106,8 @@ class Server:
 
 
 def main():
-    bank_server = Server()
-    bank_server.start()
+    server = Server()
+    server.start()
 
 
 main()
