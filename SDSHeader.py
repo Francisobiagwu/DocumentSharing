@@ -140,4 +140,4 @@ class SDSHeader:
         self.set_checksum()
 
         # print(self.get_request(), self.get_checksum(), self.get_timestamp())
-        return self.get_message_type(), self.get_checksum(), self.get_timestamp()
+        return self.get_message_type(), self.get_checksum(), self.get_timestamp(), self.get_data()

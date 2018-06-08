@@ -1,62 +1,192 @@
+#!/usr/bin/env python
+
 """
 @author: Francis Obiagwu
 @software: SecureDocumentSharing
-@file: SDSPdu.py
-@time: 6/6/18 7:21 PM
+@file: SDSClient.py
+@description: Client class that request for service from the server
+@time: 6/6/18 6:24 PM
 """
 
+import binascii
+import math
 import struct
 
+from SDSHeader import SDSHeader
 
-# print(datetime.datetime.now())
 
-class SDSPdu:
-    message_type_len = '12s'
-    timestamp = '12s'
-    checksum_len = 'q'
-    # error_code = 'i'
-    data = '100s'
-    # more_data = '?'
-    space = ' '
+class BSCAPdu:
+    """
+    The BSCAPdu class creates an instance needed to send messages across sockets
 
-    format = message_type_len + space + timestamp + space + checksum_len + space + data + space
-    s = struct.Struct(format)
+    """
 
-    # print(format)
+    __data = ''  # data set as private
+    __BUFFER_SIZE = ''  # buffer size for sending and receiving pdu
+    __HEADER_SIZE = ''  # header size for the pdu
+    __SIZE_OF_DATA = ''  # size of data in bytes
+    __SOCKET = ''  # socket class
+    __PDU_SIZE = ''  # pdu size
+    __MESSAGE_FORMAT = ''  # message format used for the struct, this is used place pdu parts appropriately
 
-    class SDSPacketAssembly:
-        message_type = None
-        timestamp = None
-        checksum = None
-        data = None
+    # __error_checker = SDSHeader()
 
-        def set_message_type(self, message_type):
-            self.message_type = message_type
+    def __init__(self, socket, buffer_size, header_size):
+        """
+        When an instance of BSCAPdu is created, we assign the header and the data None value
+        """
+        self.__data = None
+        self.__BUFFER_SIZE = buffer_size
+        self.__HEADER_SIZE = header_size
 
-        def set_timestamp(self, timestamp):
-            self.timestamp = timestamp
+        # the size of the data is the difference between buffer size and header size
+        self.__SIZE_OF_DATA = self.__BUFFER_SIZE - self.__HEADER_SIZE
+        self.__SOCKET = socket
+        self.header = SDSHeader()
+        self.__MESSAGE_FORMAT = '12s q 26s' + str(self.__SIZE_OF_DATA) + 's'  # set size for PDU
 
-        def set_checksum(self, checksum):
-            self.checksum = checksum
+    def generate_byte(self, request, data_chunk):
+        """
 
-        def set_data(self, data):
-            self.data = data
+        :param string request: The request field
+        :param string data_chunk: The data to be sent
+        :return: None
+        """
 
-        def get_message_type(self):
-            return self.message_type
+        # verify that the parameters are strings
+        try:
+            request = request.decode()
+        except AttributeError:
+            pass
 
-        def get_timestamp(self):
-            return self.timestamp
+        try:
+            data_chunk = data_chunk.decode()
+        except AttributeError:
+            pass
 
-        def get_checksum(self):
-            return self.checksum
+        # print('{} size of data '.format(self.__SIZE_OF_DATA))
+        s = struct.Struct(self.__MESSAGE_FORMAT)
+        self.__PDU_SIZE = s.size
+        # print('size of struct {}'.format(s.size))
+        # print('----getting headers---')
+        req, checksum, timestamp = self.header.get_header(request, data_chunk)
+        data_chunk = data_chunk.encode()  # convert the data chuck to bytes
+        # print('---done-----')
+        # print('req {} checksum {} timestamp {} data {}'.format(req, checksum, timestamp, data_chunk))
+        pdu = (req, checksum, timestamp, data_chunk)
+        # print(pdu)
+        pdu_packed = s.pack(*pdu)
+        # print(pdu_packed)
+        # print(binascii.hexlify(pdu_packed))
 
-    def set_format(self, format):
-        self.format = format
-        self.s = struct.Struct(format)
+        # print(s.unpack(pdu_packed))
 
-    def pack(self, tuple_pdu):
-        return self.s.pack(*tuple_pdu)
+        return pdu_packed
 
+    def send(self, request, data):
+        # print("In send under BSCAPdu")
+        # print('data :{} request: {}'.format(data, request))
+        try:
+            data = data.decode()
+        except AttributeError:
+            pass
+        try:
+            request = request.decode()
+        except AttributeError:
+            pass
+
+        self.__data = data
+        data_arr = self.chunk_messages(data)  # return the data array
+
+        # for every data_chunk in the array, send with different header,
+        # since the checksum and timestamp will be different
+        for d in data_arr:
+            pdu = self.generate_byte(request, d)  # returns the pdu in byte
+            # print('sending')
+            # print(pdu)
+
+            print('sending')
+
+            # print(pdu)
+
+            self.__SOCKET.send(pdu)
+
+    def chunk_messages(self, data, no_chunks=None):
+        """
+        :return type:  string[]
+        """
+        no_chunks = self.__SIZE_OF_DATA
+        arr = []
+        start = 0
+        no_iterations = math.ceil(len(data) / no_chunks)
+        stop = no_chunks
+
+        for i in range(no_iterations):
+            arr.append(data[start: stop])  # 0:4
+            start = stop
+            stop += no_chunks  # 4:8
+
+        return arr
+
+    def receive(self):
+        print('Receiving....')
+        binary_data = self.__SOCKET.recv(self.__BUFFER_SIZE)
+
+        s = struct.Struct(self.__MESSAGE_FORMAT)
+        # print('Size : {}'.format(s.size))
+        try:
+            request, checksum, timestamp, data_chunk = s.unpack(binary_data)
+            request = request.decode('unicode_escape').encode('utf-8')
+            timestamp = timestamp.decode('unicode_escape').encode('utf-8')
+            data_chunk = data_chunk.decode('unicode_escape').encode('utf-8')
+
+
+
+
+        except struct.error as err:
+            print('size of struct: {}\n'
+                  'size of data: {}\n'
+                  'size of heaer: {}\n'
+                  '\n{}'.format(s.size, self.__SIZE_OF_DATA, self.__HEADER_SIZE, err.args))
+
+        return request, checksum, timestamp, data_chunk
+
+    def get_buffer_size(self):
+        return self.__BUFFER_SIZE
+
+    def get_data_size(self):
+        return self.__SIZE_OF_DATA
+
+    def get_pdu_size(self):
+        return self.__PDU_SIZE
+
+    def error_check_crc(self, binary_data):
+        request, checksum, timestamp, data = binary_data
+        # verify if the received checksum is the same as the sent checksum
+        if checksum == self.__error_checker.get_checksum_error_crc(request, timestamp, data):
+            return True
+        else:
+            print(checksum, self.__error_checker.get_checksum_error_crc(request, timestamp, data))
+            print("Error was found on the checksum")
+            return False
+
+    def convert_to_human_readable(self, hex_data):
+        s = struct.Struct(self.__MESSAGE_FORMAT)
+        data = hex_data  # stil in binary
+        data = binascii.a2b_hex(data)
+
+        print(data)
+
+# from BSCADocument import BSCADocument
 #
-# sds = SDSPdu()
+# doc = BSCADocument()
+# document = doc.get_document()
+#
+#
+# test = BSCAPdu(None, 100, 50)
+#
+# arr  = test.chunk_messages(document, 50)
+# print(len(arr))
+#
+# for item in arr:
+#     test.generate_byte('CONNECT', item)

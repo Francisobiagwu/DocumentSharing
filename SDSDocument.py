@@ -7,7 +7,7 @@ __email__ = "francis.c.obiagwu.civ@mail.mil"
 
 
 class BSCADocument:
-    __default_path = "C:\\Users\\Admin\\PycharmProjects\\banking_application_test\\document"
+    __default_path = "document"
 
     def __init__(self, path=__default_path):
         self.__path = self.__default_path

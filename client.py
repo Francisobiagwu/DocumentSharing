@@ -8,8 +8,8 @@ __email__ = "francis.c.obiagwu.civ@mail.mil"
 import socket
 import sys
 
-from BSCADocument import BSCADocument
-from BSCAPdu import BSCAPdu
+from SDSDocument import BSCADocument
+from SDSPdu import BSCAPdu
 
 
 class Client():
