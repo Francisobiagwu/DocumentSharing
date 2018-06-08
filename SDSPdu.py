@@ -166,16 +166,23 @@ class SDSPdu:
         return self.__PDU_SIZE
 
     def remove_pdu_padding(self, binary_data):
+        """
+        typically when you specify a size in struct, if the string len is smaller than the specified size in struct, the data will be padded with b'\x00'
+        Therefore, we use this method to remove any padding that is added when the packet was sent
+        :param binary_data:
+        :return: pdu array without padding
+        """
         array = []
-        padding = b'\x00'
+        padding = b'\x00'  # this is the variable that will be searched for
         for item in binary_data:
-            if type(item) is int:
-                array.append(item)
+            if type(
+                    item) is int:  # padding doesn't occur for int types, therefore is the pdu part is int, we don't care
+                array.append(item)  # add the item to the array to be returned
                 pass
             else:
                 if padding in item:
                     padding_index = item.index(padding)
-                    array.append(item[:7])
+                    array.append(item[:padding_index])
 
                 else:
                     array.append(item)
