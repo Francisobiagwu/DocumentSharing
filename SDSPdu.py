@@ -113,9 +113,6 @@ class SDSPdu:
         else:
             print('The array returned from chuck message is None')
 
-
-
-
     def chunk_messages(self, data, no_chunks=None):
         """
         :return type:  string[]
@@ -176,19 +173,18 @@ class SDSPdu:
         padding = b'\x00'  # this is the variable that will be searched for
         for item in binary_data:
             if type(
-                    item) is int:  # padding doesn't occur for int types, therefore is the pdu part is int, we don't care
+                    item) is int:  # padding doesn't occur for int types, therefore we don't care
                 array.append(item)  # add the item to the array to be returned
-                pass
-            else:
+
+            else:  # if the pdu part is not int, then search for padding
                 if padding in item:
                     padding_index = item.index(padding)
-                    array.append(item[:padding_index])
+                    array.append(item[:padding_index])  # get the item upto the padding, then add it to the array
 
                 else:
                     array.append(item)
 
         return array
-
 
     def error_check_crc(self, binary_data):
         request, checksum, timestamp, data = binary_data
