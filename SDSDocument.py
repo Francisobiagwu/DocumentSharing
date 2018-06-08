@@ -7,8 +7,11 @@ __email__ = "francis.c.obiagwu.civ@mail.mil"
 
 
 class SDSDocument:
-    import os
+    """
+    This class is used to read the contents of a text file
+    """
 
+    import os
     __default_path = os.path.abspath("document.txt")
     __path = None
 
@@ -20,6 +23,10 @@ class SDSDocument:
             self.__path = path
 
     def get_document(self):
+        """
+        Used to return the content of the text file
+        :return:
+        """
         try:
             with open(self.__path, 'r', encoding='utf-8') as file:
                 print('about getting document.txt')
