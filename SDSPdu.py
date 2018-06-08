@@ -165,6 +165,24 @@ class SDSPdu:
     def get_pdu_size(self):
         return self.__PDU_SIZE
 
+    def remove_pdu_padding(self, binary_data):
+        array = []
+        padding = b'\x00'
+        for item in binary_data:
+            if type(item) is int:
+                array.append(item)
+                pass
+            else:
+                if padding in item:
+                    padding_index = item.index(padding)
+                    array.append(item[:7])
+
+                else:
+                    array.append(item)
+
+        return array
+
+
     def error_check_crc(self, binary_data):
         request, checksum, timestamp, data = binary_data
         # verify if the received checksum is the same as the sent checksum
