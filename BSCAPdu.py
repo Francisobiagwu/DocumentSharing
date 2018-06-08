@@ -7,7 +7,7 @@ import binascii
 import math
 import struct
 
-from BSCAHeader import BSCAHeader
+from SDSHeader import SDSHeader
 
 
 class BSCAPdu:
@@ -23,7 +23,7 @@ class BSCAPdu:
     __SOCKET = ''
     __PDU_SIZE = ''
     __MESSAGE_FORMAT = ''
-    __error_checker = BSCAHeader()
+    __error_checker = SDSHeader()
 
     def __init__(self, socket, buffer_size, header_size):
         """
@@ -34,7 +34,7 @@ class BSCAPdu:
         self.__HEADER_SIZE = header_size
         self.__SIZE_OF_DATA = self.__BUFFER_SIZE - self.__HEADER_SIZE
         self.__SOCKET = socket
-        self.header = BSCAHeader()
+        self.header = SDSHeader()
         self.__MESSAGE_FORMAT = '12s q 26s' + str(self.__SIZE_OF_DATA) + 's'  # set size for PDU
 
     def generate_byte(self, request, data_chunk):
