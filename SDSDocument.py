@@ -7,9 +7,10 @@ __email__ = "francis.c.obiagwu.civ@mail.mil"
 
 
 class SDSDocument:
-    __default_path = "document.txt"
+    __default_path = "SecureDocumentSharing/document.txt"
+    __path = None
 
-    def __init__(self, path=__default_path):
+    def __init__(self, path =__default_path):
         self.__path = self.__default_path
 
     def get_document(self):
