@@ -73,6 +73,9 @@ class Server:
         :return: None
         """
 
+        # when the server accepts new connection from the client, it is sends the connect message type to the client
+        # that is just an informal way of performing handshake
+
         doc_object = SDSDocument()
         m_doc = doc_object.get_document()
 

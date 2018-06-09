@@ -26,9 +26,14 @@ class SDSClientStates:
         return self.states_dic
 
     def get_state_value(self, key):
-        if key == 'WAITING_FOR_CONNECTION':  #
+        """
+        Used to get state keys to ensure that the client is not skipping states
+        :param key:
+        :return:
+        """
+        if key == 'WAITING_FOR_CONNECTION':
             return self.states_dic.get('WAITING_FOR_CONNECTION')
-        elif key == 'CONNECTED':  # in this state, the server will only accept, CAUTH message type
+        elif key == 'CONNECTED':
             return self.states_dic.get('CONNECTED')
 
         elif key == 'AUTHORIZED':
