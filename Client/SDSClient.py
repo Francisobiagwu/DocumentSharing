@@ -10,6 +10,7 @@
 import socket
 import sys
 
+from Client import SDSClientInfo
 from SDSPdu import SDSPdu
 
 
@@ -46,6 +47,7 @@ class Client():
         start the client
         :return:
         """
+
         try:
             self.__CLIENT_SOCKET.connect((self.__IP_ADDRESS, self.__PORT))  # connect the client to the server
             print('connected to {} {}'.format(self.__IP_ADDRESS, self.__PORT))
@@ -55,7 +57,8 @@ class Client():
             print(err.args)
             sys.exit(1)
 
-        print("----Now receiving----")
+        SDSClientInfo.print_instruction()
+
 
         while True:
             data_binary = self.__sds_pdu_client.receive()  # decode data when it is received
@@ -80,8 +83,6 @@ class Client():
 
 def main():
     client = Client()
-    print(client.get_server_name())
-    print(client.get_server_ip_addr())
     client.start()
 
 

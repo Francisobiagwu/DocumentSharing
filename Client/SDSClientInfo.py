@@ -13,7 +13,8 @@ def start_info():
 
 
 def print_instruction():
-    print('Welcome to Secure Document Sharing Application\n'
+    print('----------------------------------------------\n'
+          'Welcome to Secure Document Sharing Application\n'
           '----------------------------------------------\n'
           '              Instructions                    \n'
           'Login: Login, username, password, document_name\n'
