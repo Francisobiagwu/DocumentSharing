@@ -102,9 +102,6 @@ class Server:
             c_thread.start()
 
 
-def main():
+if __name__ == '__main__':
     server = Server()
     server.start()
-
-
-main()

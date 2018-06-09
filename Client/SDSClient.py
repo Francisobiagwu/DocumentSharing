@@ -66,8 +66,8 @@ class Client:
 
         # run two threads, one of the thread will be to take input from the user
         # the second thread will be to process information received from the server
-        receive_thread = threading.Thread(target=self.__sds_pdu_client.receive()).start()
-        input_thread = threading.Thread(target=self.client_input.get_user_input_formatted()).start()
+        receive_thread = threading.Thread(target=self.__sds_pdu_client.receive).start()
+        input_thread = threading.Thread(target=self.client_input.get_user_input_formatted).start()
 
 
 
