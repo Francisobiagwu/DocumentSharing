@@ -14,6 +14,8 @@ import threading
 
 from SDSDocument import SDSDocument
 from SDSPdu import SDSPdu
+from SDSMessageType import MessageType
+from SDSPdu import SDSHeader
 
 
 class Server:
@@ -75,11 +77,17 @@ class Server:
 
         # when the server accepts new connection from the client, it is sends the connect message type to the client
         # that is just an informal way of performing handshake
+        client_header = SDSHeader()
+        message_type, checksum, timestamp, data = client_header.get_header(MessageType.CONNECT, b'HELLO')
 
-        doc_object = SDSDocument()
-        m_doc = doc_object.get_document()
 
-        client_thread_name = threading.current_thread().getName()
+        #
+        # doc_object = SDSDocument()
+        # m_doc = doc_object.get_document()
+
+        client_thread_name = threading.current_thread().getName() # get the client thread name
+
+        # create a different pdu instances for send and receive
         pdu_s = SDSPdu(client_socket, self.__BUFFER_SIZE, self.__HEADER_SIZE)
         pdu_r = SDSPdu(client_socket, self.__BUFFER_SIZE, self.__HEADER_SIZE)
 
@@ -87,6 +95,9 @@ class Server:
         recv_m = threading.Thread(target=self.recv_m, args=(client_socket, client_thread_name, pdu_r))
         send_PDU.start()
         recv_m.start()
+
+
+
 
     def start(self):
         """
