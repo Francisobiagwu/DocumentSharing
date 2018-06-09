@@ -9,12 +9,14 @@
 
 import socket
 import sys
+import threading
 
 from Client import SDSClientInfo
+from Client.SDSClientInput import SDSClientInput
 from SDSPdu import SDSPdu
 
 
-class Client():
+class Client:
     """
     The Client class is used to create a client connection. To avoid error, the server object has
     to be started first before starting the client object
@@ -28,6 +30,7 @@ class Client():
     __SIZE_OF_HEADER = 50
     __SIZE_OF_DATA = __BUFFER_SIZE - __SIZE_OF_HEADER
     __sds_pdu_client = None
+    __client_input = None
 
     def __init__(self, host_name=__HOST_NAME, ip_address=__IP_ADDRESS, port=__PORT):
         """
@@ -41,6 +44,8 @@ class Client():
         self.__PORT = port
         self.__sds_pdu_client = SDSPdu(self.__CLIENT_SOCKET, self.__BUFFER_SIZE,
                                        self.__SIZE_OF_HEADER)  # create a sending and receiving object for the client
+        self.client_input = SDSClientInput()
+
 
     def start(self):
         """
@@ -58,6 +63,12 @@ class Client():
             sys.exit(1)
 
         SDSClientInfo.print_instruction()
+
+        # run two threads, one of the thread will be to take input from the user
+        # the second thread will be to process information received from the server
+        receive_thread = threading.Thread(target=self.__sds_pdu_client.receive()).start()
+        input_thread = threading.Thread(target=self.client_input.get_user_input_formatted()).start()
+
 
 
         while True:
