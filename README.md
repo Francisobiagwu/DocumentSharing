@@ -1,16 +1,3 @@
-DOCUMENT SHARING SOFTWARE
---------------------------
-
-HOW TO RUN
-1. download from github 
-2. From commandline or terminal Navigate the to download folder
-3. Run DSServer.py
-4. Run DSClient.py
-
-
-
-
-
 
 # DOCUMENT SHARING SOFTWARE
 
@@ -107,3 +94,19 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 * Hat tip to anyone whose code was used
 * Inspiration
 * etc
+
+
+
+DOCUMENT SHARING SOFTWARE
+--------------------------
+
+HOW TO RUN
+1. download from github 
+2. From commandline or terminal Navigate the to download folder
+3. Run DSServer.py
+4. Run DSClient.py
+
+
+
+
+
