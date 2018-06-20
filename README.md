@@ -1,41 +1,19 @@
-## Welcome to GitHub Pages
+DOCUMENT SHARING SOFTWARE
+--------------------------
 
-You can use the [editor on GitHub](https://github.com/Francisobiagwu/SecureDocumentSharing/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+HOW TO RUN
+1. download from github 
+2. From commandline or terminal Navigate the to download folder
+3. Run DSServer.py
+4. Run DSClient.py
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
 
-### Markdown
+COMMANDS
+------------------------------------------------------------
+LOGIN: LOGIN, USERNAME, PASSWORD, DOCUMENT_NAME             |
+REQUEST SECTION: SECTION, SECTION_ID,                       |
+COMMIT: COMMIT, SECTION_ID, DATA                            |
+LOGOFF: LOGOFF                                              |
+------------------------------------------------------------
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
-```markdown
-Syntax highlighted code block
-
-# DOCUMENT SHARING SOFTWARE
-## HOW TO RUN
-### Header 3
-
-# This is an <h1> tag
-## This is an <h2> tag
-###### This is an <h6> tag
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/Francisobiagwu/SecureDocumentSharing/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
