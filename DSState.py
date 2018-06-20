@@ -11,6 +11,14 @@ class DSState:
     """
     This object is used to inform the client and the server of the next line of action
     to take
+    STATES and ACCEPTABLE MESSAGE TYPE
+    -----------------------------------
+    WAITING_FOR_CONNECTION: in this state, the server will only accept CONNECT message type
+    CONNECTED: in this state, the server will only accept CAUTH message type
+    AUTHORIZED: in this state, the server can CAUTH, CONNECT but will choose how to process them
+    BLOCKED: in this state, the server will not accept any request from the client
+    EDITING: in this state, the server will accept, COMMIT, CAUTH, CONNECT but will choose how to process them
+
     """
 
     __states = {}

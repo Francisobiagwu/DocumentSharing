@@ -4,18 +4,18 @@ __author__ = "Francis Obiagwu"
 __copyright__ = "Copyright 2018"
 __version__ = "1.0"
 
+import binascii
 import socket
 import threading
-from DSPdu import DSPdu
-from DSState import DSState
 from datetime import datetime
-import binascii
-from DSDocument import DSDocument
+
 from DSCodes import DSCode
+from DSDocument import DSDocument
 from DSFlags import DSFlags
 from DSMessageType import DSMessageType
-
+from DSPdu import DSPdu
 from DSServerLogManagement import DSServerLogManagement
+from DSState import DSState
 
 
 class DSServer():
@@ -166,14 +166,14 @@ class DSServer():
         client_socket.send(pdu)
         self.server_log_manager.add_authenticated_client_connection(client_socket, client_address)
 
-        # Now send the document to the client
-        data_string = self.ds_document.get_document_as_string()  # get the entire document as string
+        # Now send the document.txt to the client
+        data_string = self.ds_document.get_document_as_string()  # get the entire document.txt as string
         data_break_down = self.ds_document.break_data(data_string)
 
         freq_to_send = len(data_break_down)
         count = 0
 
-        for item in data_break_down:  # we don't care about the document flags about sections taken/free
+        for item in data_break_down:  # we don't care about the document.txt flags about sections taken/free
             count += 1
             timestamp = client_pdu.get_time()  # get timestamp
             error_code = DSCode.LOGIN_SUCCESS  # assign error code
@@ -256,7 +256,7 @@ class DSServer():
 
 
             else:  # data is not free
-                # find out who is the current owner of the document
+                # find out who is the current owner of the document.txt
                 #
                 current_section_owners = self.server_log_manager.get_section_owners()
                 data = b''
@@ -321,14 +321,14 @@ class DSServer():
             client_socket.send(pdu)
             self.server_log_manager.add_authenticated_client_connection(client_socket, client_address)
 
-            # Now send the document to the client
-            data_string = self.ds_document.get_document_as_string()  # get the entire document as string
+            # Now send the document.txt to the client
+            data_string = self.ds_document.get_document_as_string()  # get the entire document.txt as string
             data_break_down = self.ds_document.break_data(data_string)
 
             freq_to_send = len(data_break_down)
             count = 0
 
-            for item in data_break_down:  # we don't care about the document flags about sections taken/free
+            for item in data_break_down:  # we don't care about the document.txt flags about sections taken/free
                 count += 1
                 timestamp = client_pdu.get_time()  # get timestamp
                 error_code = DSCode.COMMIT_UPDATE  # assign error code

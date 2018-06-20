@@ -5,10 +5,11 @@ __copyright__ = "Copyright 2018"
 __version__ = "1.0"
 
 import math
+import os
 
 
 class DSDocument:
-    __default_path = "C:\\Users\\Admin\\PycharmProjects\\DocumentSharing\\document"
+    __default_path = os.path.abspath("document.txt")
 
     def __init__( self, allowed_data_size, path=__default_path ):
         self.__path = self.__default_path
@@ -17,14 +18,14 @@ class DSDocument:
         self.free = True
         self.not_Free = False
         self.data_broken = False
-        self.__set_document_as_string()  # set document as string
+        self.__set_document_as_string()  # set document.txt as string
         self.allowed_data_size = allowed_data_size
         self.__set_document_as_string()
         self.__set_document_as_sections()
 
     def __set_document_as_string( self ):
         """
-        Used to assign a value to self.document
+        Used to assign a value to self.document.txt
         :param data:
         :return: String
         """
@@ -44,13 +45,13 @@ class DSDocument:
 
     def __set_document_as_sections( self ):
         """
-        Used to set the document into sections
+        Used to set the document.txt into sections
         :return:
         """
         arr = []
         if len(self.document) > self.allowed_data_size:  # if the size is bigger than the size allocated in struct
             # break data
-            # print('We are in break data: {}'.format(self.document))
+            # print('We are in break data: {}'.format(self.document.txt))
             data_size = len(self.document)
             number_of_breakdowns = data_size / self.allowed_data_size
 
@@ -77,14 +78,14 @@ class DSDocument:
 
     def get_document_sections( self ):
         """
-        Used to get document sections
+        Used to get document.txt sections
         :return: dictionary
         """
         return self.document_as_dic
 
     def update_document( self, section_id, data = None ):
         """
-        Used to update the document, and the dictionary
+        Used to update the document.txt, and the dictionary
         :param int section_id:
         :param string data:
         :return:
@@ -97,8 +98,8 @@ class DSDocument:
             # print(self.document_as_dic)
             print(self.document_as_dic)
             try:
-                # write to the document file
-                print('Now writing to the document')
+                # write to the document.txt file
+                print('Now writing to the document.txt')
                 with open(self.__path, 'w', encoding='utf-8') as file:  # update the main ds_document
                     for item in self.document_as_dic.values():
                         item = item[0]
@@ -135,7 +136,7 @@ class DSDocument:
         arr = []
         if len(data) > self.allowed_data_size:  # if the size is bigger than the size allocated in struct
             # break data
-            # print('We are in break data: {}'.format(self.document))
+            # print('We are in break data: {}'.format(self.document.txt))
             data_size = len(data)
             number_of_breakdowns = data_size / self.allowed_data_size
 
