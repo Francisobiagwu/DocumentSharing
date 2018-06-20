@@ -31,7 +31,7 @@ python3 DSClient.py
 
 From the client use the following commands to perform the required action
 
-## Login
+## LOGIN
 
 ````
 LOGIN, USERNAME, PASSWORD, DOCUMENT_NAME 
