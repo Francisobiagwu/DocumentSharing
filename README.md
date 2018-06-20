@@ -19,11 +19,18 @@ Python3
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
-
+From the terminal navigate to the folder where Document sharing software resides
+To run server
 ```
+python3 DSServer.py
+```
+To run client
+```
+python3 DSClient.py
+```
+
+From the client use the following commands to perform the required action
+````
 COMMANDS
 ------------------------------------------------------------
 LOGIN: LOGIN, USERNAME, PASSWORD, DOCUMENT_NAME             |
