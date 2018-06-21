@@ -99,7 +99,7 @@ class DSServer():
             message_type = unpacked_pdu_no_pad[self.message_type_index].encode()
             data = unpacked_pdu_no_pad[self.data_index]
             section_id = unpacked_pdu_no_pad[self.section_id_index]
-            flag = unpacked_pdu_no_pad[self.flag_index]
+            flag = unpacked_pdu_no_pad[self.flag_index].encode()
             print(current_state, message_type)
             if message_type == DSMessageType.CONNECT:
                 pass
@@ -110,6 +110,7 @@ class DSServer():
                 self.s_edit(section_id, client_pdu, client_state, client_socket, client_address)
 
             elif message_type == DSMessageType.S_COMMIT:
+                print(data, flag)
                 print('data before the concatonation: {}'.format(data))
                 print(client_pdu, unpacked_pdu, unpacked_pdu_no_pad)
                 if flag == DSFlags.more:
@@ -117,10 +118,10 @@ class DSServer():
                     print('string '.format(self.string_builder))
 
                 else:  # flag == DSFlags.finish:
-                    if self.string_builder is not None:  # if string builder contains something
+                    if self.string_builder != '':  # if string builder contains something
                         data = self.string_builder
                         print('data: {}'.format(data))
-                        self.string_builder = None  # reset string builder
+                        self.string_builder = ''  # reset string builder
 
                     else:
                         # if string builder is None, then data that was sent for commit is equal to the size of struct

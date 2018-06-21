@@ -5,8 +5,5 @@ __copyright__ = "Copyright 2018"
 __version__ = "1.0"
 
 test = None
-
-test = 1 + 4
-test = ''
-test = b' test '
+test += 'test'
 print(test)

@@ -113,9 +113,5 @@ class DSClient:
 
 
 if __name__ == '__main__':
-    try:
-        a = DSClient()
-        a.start()
-
-    except KeyboardInterrupt as err:
-        pass
+    a = DSClient()
+    a.start()
