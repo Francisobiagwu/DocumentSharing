@@ -115,11 +115,15 @@ class DSServer():
                     self.string_builder +=data
                     print('string '.format(self.string_builder))
 
-                else:
-                    data = self.string_builder
-                    print(data)
+                else:  # flag == DSFlags.finish:
+                    if self.string_builder is not None:  # if string builder contains something
+                        data = self.string_builder
+                        print('data: {}'.format(data))
+                        self.string_builder = None  # reset string builder
+                        self.s_commit(section_id, data, client_pdu, client_state, client_socket, client_address)
+                    else:
 
-                    self.s_commit(section_id, data, client_pdu, client_state, client_socket, client_address)
+
 
             elif message_type == DSMessageType.S_RELEASE:
                 self.release(section_id, client_pdu, client_state, client_socket, client_address)
@@ -420,5 +424,9 @@ class DSServer():
 
 
 if __name__ == '__main__':
-    server = DSServer()
-    server.start()
+    try:
+        server = DSServer()
+        server.start()
+
+    except KeyboardInterrupt as err:
+        pass
