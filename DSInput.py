@@ -4,12 +4,11 @@ __author__ = "Francis Obiagwu"
 __copyright__ = "Copyright 2018"
 __version__ = "1.0"
 
-import math
-
-from DSCodes import DSCode
-from DSFlags import DSFlags
-from DSMessageType import DSMessageType
 from DSPdu import DSPdu
+from DSCodes import DSCode
+from DSMessageType import DSMessageType
+from DSFlags import DSFlags
+import math
 
 
 class DSInput:
@@ -166,13 +165,7 @@ class DSInput:
     def commit( self ):
         data = self.array[2:]  # this will ensure that other sentences separated by comma's are used as data
         # data is retrieved as list, we need to extract it as string
-        string_builder = ''
-        for ar in data:
-            string_builder += ar
-
-        data = string_builder + ' '  # add space to the commit, to prevent concatenation of the string wth the next line
-
-        print('data in commit: {}'.format(data))
+        data = data[0]
         data_array = self.break_data(data)  # this is the section that contains the data
         freq_to_send = len(data_array)  # number of times we will send in order to complete send
         print('after the data is been broken: {}'.format(data_array, freq_to_send))
