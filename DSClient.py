@@ -15,6 +15,11 @@ from DSServerResponseProcessor import DSServerResponseProcessor
 
 
 class DSClient:
+
+    """
+    The DSClient class is used to create a client connection. To avoid error, the server object has
+    to be started first before starting the client object
+    """
     __BUFFER_SIZE = None
     __PORT = 5000
     __TCP_IP = '127.0.0.1'
