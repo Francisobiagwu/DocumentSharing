@@ -170,7 +170,7 @@ class DSInput:
         for ar in data:
             string_builder += ar
 
-        data = string_builder
+        data = string_builder + ' '  # add space to the commit, to prevent concatenation of the string wth the next line
 
         print('data in commit: {}'.format(data))
         data_array = self.break_data(data)  # this is the section that contains the data
