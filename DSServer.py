@@ -110,8 +110,9 @@ class DSServer():
                 self.s_edit(section_id, client_pdu, client_state, client_socket, client_address)
 
             elif message_type == DSMessageType.S_COMMIT:
+                print('data before the concatonation: {}'.format(data))
+                print(client_pdu, unpacked_pdu, unpacked_pdu_no_pad)
                 if flag == DSFlags.more:
-
                     self.string_builder +=data
                     print('string '.format(self.string_builder))
 
@@ -120,8 +121,13 @@ class DSServer():
                         data = self.string_builder
                         print('data: {}'.format(data))
                         self.string_builder = None  # reset string builder
-                        self.s_commit(section_id, data, client_pdu, client_state, client_socket, client_address)
+
                     else:
+                        # if string builder is None, then data that was sent for commit is equal to the size of struct
+                        pass
+
+                self.s_commit(section_id, data, client_pdu, client_state, client_socket, client_address)
+
 
 
 
@@ -428,5 +434,7 @@ if __name__ == '__main__':
         server = DSServer()
         server.start()
 
-    except KeyboardInterrupt as err:
-        pass
+    except (KeyboardInterrupt, OSError) as err:
+        import sys
+
+        sys.exit(1)
