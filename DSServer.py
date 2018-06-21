@@ -4,21 +4,23 @@ __author__ = "Francis Obiagwu"
 __copyright__ = "Copyright 2018"
 __version__ = "1.0"
 
+import binascii
 import socket
 import threading
-from DSPdu import DSPdu
-from DSState import DSState
 from datetime import datetime
-import binascii
-from DSDocument import DSDocument
+
 from DSCodes import DSCode
+from DSDocument import DSDocument
 from DSFlags import DSFlags
 from DSMessageType import DSMessageType
-
+from DSPdu import DSPdu
 from DSServerLogManagement import DSServerLogManagement
+from DSState import DSState
+from DSTimer import DSTimer
+from DSErrorCorrection import DSErrorCorrection
 
 
-class DSServer():
+class DSServer:
     """
     Used to create our server object
     """
@@ -40,6 +42,7 @@ class DSServer():
         self.message_type_index, self.timestamp_index, self.error_code_index, self.flag_index, self.reserved_1_index, self.reserved_2_index, self.section_id_index, self.data_index, self.checksum_index = DSPdu().get_pdu_parts_index()
         self.server_log_manager = DSServerLogManagement()
         self.string_builder = ''
+        self.control_ack = {}
 
     def start( self ):
         self.__SERVER_SOCKET.listen(1)
@@ -61,6 +64,11 @@ class DSServer():
         client_state = DSState()  # create client state object
         client_pdu = DSPdu()  # create pdu object
         self.__BUFFER_SIZE = client_pdu.get_size()  # set the buffer size
+        client_timer = DSTimer()
+
+        print(client_timer.is_ACK_received)
+        client_error_correction = DSErrorCorrection()
+
 
         ###############################
         # send the first hello message#
@@ -74,7 +82,12 @@ class DSServer():
         ##################################
         # set state#
         ##################################
-        self.connect(client_state, client_pdu, client_socket, client_address)
+
+        connect_thread = threading.Thread(target=self.connect, args=(
+            client_state, client_pdu, client_socket, client_address, client_timer, client_error_correction)).start()
+        timer_thread = threading.Thread(target=client_timer.start_timer).start()
+
+        # self.connect(client_state, client_pdu, client_socket, client_address, client_timer)
 
         ###################################
         # Now receive message and process #
@@ -99,7 +112,7 @@ class DSServer():
             message_type = unpacked_pdu_no_pad[self.message_type_index].encode()
             data = unpacked_pdu_no_pad[self.data_index]
             section_id = unpacked_pdu_no_pad[self.section_id_index]
-            flag = unpacked_pdu_no_pad[self.flag_index]
+            flag = unpacked_pdu_no_pad[self.flag_index].encode()
             print(current_state, message_type)
             if message_type == DSMessageType.CONNECT:
                 pass
@@ -110,16 +123,30 @@ class DSServer():
                 self.s_edit(section_id, client_pdu, client_state, client_socket, client_address)
 
             elif message_type == DSMessageType.S_COMMIT:
+                print(data, flag)
+                print('data before the concatonation: {}'.format(data))
+                print(client_pdu, unpacked_pdu, unpacked_pdu_no_pad)
                 if flag == DSFlags.more:
+                    self.string_builder += data
+                    print('string after concatenation')
+                    print('string {}'.format(self.string_builder))
 
-                    self.string_builder +=data
-                    print('string '.format(self.string_builder))
+                else:  # flag == DSFlags.finish:
+                    if self.string_builder != '':  # if string builder contains something
+                        data = self.string_builder
+                        print('data: {}'.format(data))
+                        self.string_builder = ''  # reset string builder
 
-                else:
-                    data = self.string_builder
-                    print(data)
+                    else:
+                        # if string builder is None, then data that was sent for commit is equal to the size of struct
+                        pass
 
                     self.s_commit(section_id, data, client_pdu, client_state, client_socket, client_address)
+
+
+
+
+
 
             elif message_type == DSMessageType.S_RELEASE:
                 self.release(section_id, client_pdu, client_state, client_socket, client_address)
@@ -127,7 +154,17 @@ class DSServer():
             elif message_type == DSMessageType.CLOSE:
                 self.close(client_pdu, client_state, client_socket, client_address)
 
-    def connect( self, client_state, client_pdu, client_socket, client_address ):
+            elif message_type == DSMessageType.ACK:
+                # verify that the received checksum matched the data sent
+                result = client_error_correction.is_data_received(int(data))
+                print('result {}'.format(result))
+                if result is True:
+                    client_timer.is_ACK_received = True
+                    pass
+                else:
+                    pass
+
+    def connect( self, client_state, client_pdu, client_socket, client_address, client_timer, client_error_correction ):
         # assign the resigning parameters
         timestamp = client_pdu.get_time()  # get timestamp
         reserved_1 = self.null_byte
@@ -135,6 +172,10 @@ class DSServer():
         data = b'HELLO CLIENT'
         section_id = self.null_byte
         checksum = client_pdu.get_checksum(timestamp, data)
+        print(client_error_correction)
+
+        # add recently sent data to the error-correction-tracker
+        client_error_correction.add_recently_sent_data(data, checksum)
         pdu_array = [DSMessageType.CONNECT, timestamp, DSCode.OK, DSFlags.finish, reserved_1, reserved_2, section_id,
                      data, checksum]
 
@@ -146,6 +187,8 @@ class DSServer():
         print(pdu)
         client_state.set_state(DSState.CONNECTED)
         client_socket.send(pdu)
+        # # start timer for ack
+        # timer_thread = threading.Thread(target=client_timer.start_timer()).start()
 
     def cauth( self, client_pdu, client_state, client_socket, client_address ):
 
@@ -166,14 +209,14 @@ class DSServer():
         client_socket.send(pdu)
         self.server_log_manager.add_authenticated_client_connection(client_socket, client_address)
 
-        # Now send the document to the client
-        data_string = self.ds_document.get_document_as_string()  # get the entire document as string
+        # Now send the document.txt to the client
+        data_string = self.ds_document.get_document_as_string()  # get the entire document.txt as string
         data_break_down = self.ds_document.break_data(data_string)
 
         freq_to_send = len(data_break_down)
         count = 0
 
-        for item in data_break_down:  # we don't care about the document flags about sections taken/free
+        for item in data_break_down:  # we don't care about the document.txt flags about sections taken/free
             count += 1
             timestamp = client_pdu.get_time()  # get timestamp
             error_code = DSCode.LOGIN_SUCCESS  # assign error code
@@ -190,10 +233,6 @@ class DSServer():
             pdu_array = [DSMessageType.CAUTH, timestamp, error_code, flag, reserved_1, reserved_2, section_id, data,
                          checksum]
             pdu = client_pdu.pack(pdu_array)
-            ##################################
-            # set state#
-            ##################################
-            client_state.set_state(DSMessageType.CAUTH)
             #############################################
             # SEND THE DOCUMENT
             #############################################
@@ -203,11 +242,6 @@ class DSServer():
 
     def s_edit( self, section_id, client_pdu, client_state, client_socket, client_address ):
         section_id = int(section_id)
-        print('ds_document')
-        print('-------------------')
-        print(self.ds_document)
-        print('--------------------')
-        print(section_id)
         print(self.ds_document.get_document_sections())
         if section_id in self.ds_document.get_document_sections():
             print('Before')
@@ -256,7 +290,7 @@ class DSServer():
 
 
             else:  # data is not free
-                # find out who is the current owner of the document
+                # find out who is the current owner of the document.txt
                 #
                 current_section_owners = self.server_log_manager.get_section_owners()
                 data = b''
@@ -321,14 +355,14 @@ class DSServer():
             client_socket.send(pdu)
             self.server_log_manager.add_authenticated_client_connection(client_socket, client_address)
 
-            # Now send the document to the client
-            data_string = self.ds_document.get_document_as_string()  # get the entire document as string
+            # Now send the document.txt to the client
+            data_string = self.ds_document.get_document_as_string()  # get the entire document.txt as string
             data_break_down = self.ds_document.break_data(data_string)
 
             freq_to_send = len(data_break_down)
             count = 0
 
-            for item in data_break_down:  # we don't care about the document flags about sections taken/free
+            for item in data_break_down:  # we don't care about the document.txt flags about sections taken/free
                 count += 1
                 timestamp = client_pdu.get_time()  # get timestamp
                 error_code = DSCode.COMMIT_UPDATE  # assign error code
@@ -429,5 +463,11 @@ class DSServer():
 
 
 if __name__ == '__main__':
-    server = DSServer()
-    server.start()
+    try:
+        server = DSServer()
+        server.start()
+
+    except (KeyboardInterrupt, OSError) as err:
+        import sys
+
+        sys.exit(1)
