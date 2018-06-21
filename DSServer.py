@@ -190,10 +190,6 @@ class DSServer():
             pdu_array = [DSMessageType.CAUTH, timestamp, error_code, flag, reserved_1, reserved_2, section_id, data,
                          checksum]
             pdu = client_pdu.pack(pdu_array)
-            ##################################
-            # set state#
-            ##################################
-            client_state.set_state(DSMessageType.CAUTH)
             #############################################
             # SEND THE DOCUMENT
             #############################################
@@ -203,11 +199,6 @@ class DSServer():
 
     def s_edit( self, section_id, client_pdu, client_state, client_socket, client_address ):
         section_id = int(section_id)
-        print('ds_document')
-        print('-------------------')
-        print(self.ds_document)
-        print('--------------------')
-        print(section_id)
         print(self.ds_document.get_document_sections())
         if section_id in self.ds_document.get_document_sections():
             print('Before')

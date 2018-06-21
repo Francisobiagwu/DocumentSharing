@@ -5,14 +5,12 @@ __copyright__ = "Copyright 2018"
 __version__ = "1.0"
 
 import socket
-
-from DSPdu import DSPdu
-import threading
 import sys
+import threading
+
 from DSCodes import DSCode
-from DSFlags import DSFlags
 from DSInput import DSInput
-from DSMessageType import DSMessageType
+from DSPdu import DSPdu
 from DSServerResponseProcessor import DSServerResponseProcessor
 
 
@@ -114,5 +112,10 @@ class DSClient:
                 break
 
 
-a = DSClient()
-a.start()
+if __name__ == '__main__':
+    try:
+        a = DSClient()
+        a.start()
+
+    except KeyboardInterrupt as err:
+        pass
