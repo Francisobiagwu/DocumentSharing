@@ -11,6 +11,10 @@ from DSCodes import DSCode
 
 
 class DSServerResponseProcessor:
+    """
+    This class in charge of processing server replies
+    """
+
     def __init__( self ):
         self.message_type = ''
         self.timestamp = ''
@@ -31,9 +35,13 @@ class DSServerResponseProcessor:
 
     def process_response( self, response, client_socket ):
         """
-        :param array response:
+        This is the main response processor
+        :param response: pdu array
+        :param client_socket: client's socket object
         :return:
         """
+
+        # assign various pdu parts from the response parameter
         self.response = response
         self.client_socket = client_socket
         self.message_type = self.response[self.message_type_index]
@@ -75,9 +83,15 @@ class DSServerResponseProcessor:
             return False
 
     def connect( self ):
+        # test
+        import time
+        time.sleep(1)
+
         print('Connected to the server')
         # print(self.error_code)
         # print(self.data)
+        self.send_ack()  # acknowledge receipt of connection
+
         message_type = DSMessageType.CONNECT
         timestamp = self.server_processor_pdu.get_time()  # get timestamp
         error_code = DSCode.OK  # assign error code
@@ -144,3 +158,19 @@ class DSServerResponseProcessor:
         # the server is not meant to respond with this messagetype since once the client is done updating a section
         # server is supposed to move the state back to S_DATA
         pass
+
+    def send_ack( self ):
+        message_type = DSMessageType.ACK
+        timestamp = self.server_processor_pdu.get_time()  # get timestamp
+        error_code = DSCode.OK  # assign error code
+        flag = DSFlags.finish
+        reserved_1 = self.null_byte
+        reserved_2 = self.null_byte
+        section_id = self.null_byte
+        data = str(
+            self.checksum).encode()  # we are sending the checksum as data, since the server will use this to verify if the
+        # client received the message without any tampering
+        checksum = self.server_processor_pdu.get_checksum(timestamp, data)
+        pdu_array = [message_type, timestamp, error_code, flag, reserved_1, reserved_2, section_id, data, checksum]
+        pdu = self.server_processor_pdu.pack(pdu_array)
+        self.client_socket.send(pdu)
