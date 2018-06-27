@@ -11,13 +11,13 @@ from datetime import datetime
 
 from DSCodes import DSCode
 from DSDocument import DSDocument
+from DSErrorCorrection import DSErrorCorrection
 from DSFlags import DSFlags
 from DSMessageType import DSMessageType
 from DSPdu import DSPdu
 from DSServerLogManagement import DSServerLogManagement
 from DSState import DSState
 from DSTimer import DSTimer
-from DSErrorCorrection import DSErrorCorrection
 
 
 class DSServer:
@@ -84,8 +84,10 @@ class DSServer:
         ##################################
 
         connect_thread = threading.Thread(target=self.connect, args=(
-            client_state, client_pdu, client_socket, client_address, client_timer, client_error_correction)).start()
-        timer_thread = threading.Thread(target=client_timer.start_timer).start()
+            client_state, client_pdu, client_socket, client_address, client_timer, client_error_correction))
+        connect_thread.start()
+        timer_thread = threading.Thread(target=client_timer.start_timer, args=(client_error_correction,))
+        timer_thread.start()
 
         # self.connect(client_state, client_pdu, client_socket, client_address, client_timer)
 
@@ -172,7 +174,6 @@ class DSServer:
         data = b'HELLO CLIENT'
         section_id = self.null_byte
         checksum = client_pdu.get_checksum(timestamp, data)
-        print(client_error_correction)
 
         # add recently sent data to the error-correction-tracker
         client_error_correction.add_recently_sent_data(data, checksum)
