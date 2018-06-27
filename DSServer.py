@@ -64,10 +64,12 @@ class DSServer:
         client_state = DSState()  # create client state object
         client_pdu = DSPdu()  # create pdu object
         self.__BUFFER_SIZE = client_pdu.get_size()  # set the buffer size
-        client_timer = DSTimer()
+
+
+        client_error_correction = DSErrorCorrection()
+        client_timer = DSTimer(client_socket, client_pdu, client_error_correction)
 
         print(client_timer.is_ACK_received)
-        client_error_correction = DSErrorCorrection()
 
 
         ###############################
@@ -86,7 +88,7 @@ class DSServer:
         connect_thread = threading.Thread(target=self.connect, args=(
             client_state, client_pdu, client_socket, client_address, client_timer, client_error_correction))
         connect_thread.start()
-        timer_thread = threading.Thread(target=client_timer.start_timer, args=(client_error_correction,))
+        timer_thread = threading.Thread(target=client_timer.start_timer)
         timer_thread.start()
 
         # self.connect(client_state, client_pdu, client_socket, client_address, client_timer)
@@ -168,6 +170,7 @@ class DSServer:
 
     def connect( self, client_state, client_pdu, client_socket, client_address, client_timer, client_error_correction ):
         # assign the resigning parameters
+        message_type = DSMessageType.CONNECT
         timestamp = client_pdu.get_time()  # get timestamp
         reserved_1 = self.null_byte
         reserved_2 = self.null_byte
@@ -176,8 +179,8 @@ class DSServer:
         checksum = client_pdu.get_checksum(timestamp, data)
 
         # add recently sent data to the error-correction-tracker
-        client_error_correction.add_recently_sent_data(data, checksum)
-        pdu_array = [DSMessageType.CONNECT, timestamp, DSCode.OK, DSFlags.finish, reserved_1, reserved_2, section_id,
+        client_error_correction.add_recently_sent_data(data, checksum, message_type)
+        pdu_array = [message_type, timestamp, DSCode.OK, DSFlags.finish, reserved_1, reserved_2, section_id,
                      data, checksum]
 
         ##################################
@@ -469,6 +472,7 @@ if __name__ == '__main__':
         server.start()
 
     except (KeyboardInterrupt, OSError) as err:
+        print(err.args)
         import sys
 
         sys.exit(1)
