@@ -1,7 +1,7 @@
 """
 @author: Francis Obiagwu
 @software: SecureDocumentSharing
-@file: SDSTimer.py
+@file: DSTimer.py
 @time: 6/9/18 5:56 PM
 """
 

@@ -13,3 +13,4 @@ class DSMessageType:
     S_COMMIT = b'S_COMMIT'
     S_RELEASE = b'S_RELEASE'
     CLOSE = b'CLOSE'
+    ACK = b'ACK'
