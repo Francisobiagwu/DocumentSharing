@@ -41,8 +41,8 @@ class DSDocument:
         Used to get the document_string
         :return: string
         """
-        self.__set_document_as_string()
-        self.__set_document_as_sections()
+        self.__set_document_as_string()     # get the most updated copy of the document
+        self.__set_document_as_sections()   # arrange the document into sections in preparation for them to be sent.
         return self.document
 
     def __set_document_as_sections( self ):
