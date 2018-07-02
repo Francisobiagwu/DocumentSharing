@@ -32,7 +32,7 @@ class DSServer:
     __password = 'root'
     __document_name = 'example1'
 
-    def __init__( self, buffer_size=__BUFFER_SIZE ):
+    def __init__(self, buffer_size=__BUFFER_SIZE):
         self.__BUFFER_SIZE = buffer_size
         self.__SERVER_SOCKET.bind((self.__TCP_IP, self.__PORT))
         self.ds_document = DSDocument(DSPdu().get_data_size())  # we are going to change this into some variable later
@@ -44,7 +44,7 @@ class DSServer:
         self.string_builder = ''
         self.control_ack = {}
 
-    def start( self ):
+    def start(self):
         self.__SERVER_SOCKET.listen(1)
         str_to_print = 'SERVER started @ {} {}\n'.format(self.__TCP_IP, self.__PORT)
         print(str_to_print)
@@ -57,7 +57,7 @@ class DSServer:
 
             c_thread = threading.Thread(target=self.client_thread, args=(client_socket, client_address)).start()
 
-    def client_thread( self, client_socket, client_address ):
+    def client_thread(self, client_socket, client_address):
         # create pdu object for the client, this happens only once for each client
 
         authorized = False  # now the client have no authorization
@@ -65,12 +65,10 @@ class DSServer:
         client_pdu = DSPdu()  # create pdu object
         self.__BUFFER_SIZE = client_pdu.get_size()  # set the buffer size
 
-
         client_error_correction = DSErrorCorrection()
         client_timer = DSTimer(client_socket, client_pdu, client_error_correction)
 
         print(client_timer.is_ACK_received)
-
 
         ###############################
         # send the first hello message#
@@ -168,7 +166,7 @@ class DSServer:
                 else:
                     pass
 
-    def connect( self, client_state, client_pdu, client_socket, client_address, client_timer, client_error_correction ):
+    def connect(self, client_state, client_pdu, client_socket, client_address, client_timer, client_error_correction):
         # assign the resigning parameters
         message_type = DSMessageType.CONNECT
         timestamp = client_pdu.get_time()  # get timestamp
@@ -194,7 +192,7 @@ class DSServer:
         # # start timer for ack
         # timer_thread = threading.Thread(target=client_timer.start_timer()).start()
 
-    def cauth( self, client_pdu, client_state, client_socket, client_address ):
+    def cauth(self, client_pdu, client_state, client_socket, client_address):
 
         # send an ACK to inform the client that they have been authenticated
         timestamp = client_pdu.get_time()  # get timestamp
@@ -244,7 +242,7 @@ class DSServer:
             print('item : {}'.format(item))
             print('pdu before send: {}'.format(pdu))
 
-    def s_edit( self, section_id, client_pdu, client_state, client_socket, client_address ):
+    def s_edit(self, section_id, client_pdu, client_state, client_socket, client_address):
         section_id = int(section_id)
         print(self.ds_document.get_document_sections())
         if section_id in self.ds_document.get_document_sections():
@@ -336,7 +334,7 @@ class DSServer:
             token_id = None
             return issued_token, token_id
 
-    def s_commit( self, section_id, data, client_pdu, client_state, client_socket, client_address ):
+    def s_commit(self, section_id, data, client_pdu, client_state, client_socket, client_address):
         print('in the server commit section ')
         print('data {}'.format(data))
         self.ds_document.update_document(section_id, data)
@@ -392,10 +390,10 @@ class DSServer:
                 # print('item : {}'.format(item))
                 # print('pdu before send: {}'.format(pdu))
 
-    def close( self ):
+    def close(self):
         pass
 
-    def release( self, section_id, client_pdu, client_state, client_socket, client_address ):
+    def release(self, section_id, client_pdu, client_state, client_socket, client_address):
         self.ds_document.release(section_id)
         # should we send an acknowledgement to the client informing them that the section was
         # successfully released?
@@ -405,21 +403,21 @@ class DSServer:
         return str(datetime.now()).encode('utf-8')
 
     @staticmethod
-    def get_checksum( timestamp, data ):
+    def get_checksum(timestamp, data):
         try:
             return binascii.crc32(timestamp + data)
         except TypeError as err:
             print('This value {} is not a byte'.format(data))
 
     @staticmethod
-    def remove_space( array ):
+    def remove_space(array):
         new_array = []
         for item in array:
             new_array.append(item.strip())
 
         return new_array
 
-    def response( self, request, error_code, data ):
+    def response(self, request, error_code, data):
         """
         This is used to break server response to be sent into chucks of pdu
         ie if data = 'Access denied'
@@ -448,7 +446,7 @@ class DSServer:
             array = [request, checksum, timestamp, error_code, data]
             return array
 
-    def response_document( self, request, error_code, data_array ):
+    def response_document(self, request, error_code, data_array):
         """
         Used for sending documents only
         :param data_array:

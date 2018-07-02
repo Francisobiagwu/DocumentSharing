@@ -1,7 +1,7 @@
 """
 @author: Francis Obiagwu
 @software: SecureDocumentSharing
-@file: SDSAuthentication.py
+@file: DSAuthentication.py
 @time: 6/6/18 7:16 PM
 """
 
