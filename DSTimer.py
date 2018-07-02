@@ -24,6 +24,7 @@ class DSTimer:
         self.error_correction_obj = client_error_correction_obj
         self.client_socket = client_socket
         self.client_pdu_obj = client_pdu_obj
+        self.client_address = client_address
         self.null_byte = b'\x00'
         self.server_logger = DSServerLogManagement()
 

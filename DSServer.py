@@ -79,9 +79,6 @@ class DSServer:
         issued_token = False
         token_id = ''
 
-        ##################################
-        # set state#
-        ##################################
 
         connect_thread = threading.Thread(target=self.connect, args=(
             client_state, client_pdu, client_socket, client_address, client_timer, client_error_correction))

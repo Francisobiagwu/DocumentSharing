@@ -57,3 +57,10 @@ class DSErrorCorrection:
         :return: Returns the message type sent
         """
         return self.message_type
+
+
+    def get_recently_sent_data(self):
+        data = self.sent_data.values()
+
+
+test = DSErrorCorrection('francis', 33333, 'ACK')
