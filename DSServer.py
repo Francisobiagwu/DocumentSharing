@@ -145,11 +145,6 @@ class DSServer:
 
                     self.s_commit(section_id, data, client_pdu, client_state, client_socket, client_address)
 
-
-
-
-
-
             elif message_type == DSMessageType.S_RELEASE:
                 self.release(section_id, client_pdu, client_state, client_socket, client_address)
 

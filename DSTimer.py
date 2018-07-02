@@ -45,7 +45,7 @@ class DSTimer:
 
                 pdu = self.client_pdu.pack(pdu_array)
                 self.client_socket.send(pdu)
-                self.server_log_manager.add_authenticated_client_connection(client_socket, client_address)
+                self.server_log_manager.add_authenticated_client_connection(self.client_socket, self.client_address)
 
                 # Now send the document.txt to the client
                 data_string = self.ds_document.get_document_as_string()  # get the entire document.txt as string
