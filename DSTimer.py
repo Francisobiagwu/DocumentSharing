@@ -10,6 +10,7 @@ import time
 from DSCodes import DSCode
 from DSFlags import DSFlags
 from DSMessageType import DSMessageType
+from DSServerLogManagement import DSServerLogManagement
 
 
 class DSTimer:
@@ -23,6 +24,8 @@ class DSTimer:
         self.error_correction_obj = client_error_correction_obj
         self.client_socket = client_socket
         self.client_pdu_obj = client_pdu_obj
+        self.null_byte = b'\x00'
+        self.server_logger = DSServerLogManagement()
 
     def start_timer(self):
         # will stop once the count_down reaches 0 or when an ACK is received
@@ -35,7 +38,7 @@ class DSTimer:
             time.sleep(1)
             self.count_down -= 1
 
-        if self.count_down == 0 and self.is_ACK_received:  # if the timer stops and the ACK is not received
+        if self.count_down == 0 and not self.is_ACK_received:  # if the timer stops and the ACK is not received
             recently_sent_data = self.error_correction_obj.sent_data
             # resend the data to the client
             # so I need client_socket, and I will need to call the pdu class in order to do this
@@ -48,9 +51,9 @@ class DSTimer:
                          reserved_2,
                          self.null_byte, ACK_data, checksum]
 
-            pdu = self.client_pdu.pack(pdu_array)
+            pdu = self.client_pdu_obj.pack(pdu_array)
             self.client_socket.send(pdu)
-            self.server_log_manager.add_authenticated_client_connection(self.client_socket, self.client_address)
+            self.server_logger.add_authenticated_client_connection(self.client_socket, self.client_address)
 
             # Now send the document.txt to the client
             self.client_socket.send(recently_sent_data)
