@@ -12,7 +12,7 @@ from DSFlags import DSFlags
 from DSMessageType import DSMessageType
 from DSServerLogManagement import DSServerLogManagement
 from DSErrorCorrection import DSErrorCorrection
-
+from DSServerResponseProcessor import DSServerResponseProcessor
 
 class DSTimer:
 
@@ -29,7 +29,7 @@ class DSTimer:
         self.null_byte = b'\x00'
         self.server_logger = DSServerLogManagement()
 
-    def start_timer(self, error_correction_obj: DSErrorCorrection):
+    def start_timer(self):
         # will stop once the count_down reaches 0 or when an ACK is received
         print('in start timer')
         # print('countdown {} is_ack_received: {}'.format(self.count_down, self.is_ACK_received))
@@ -41,40 +41,27 @@ class DSTimer:
             self.count_down -= 1
 
         if self.count_down == 0 and not self.is_ACK_received:  # if the timer stops and the ACK is not received
-            recently_sent_data = self.error_correction_obj.sent_data
+
             # resend the data to the client
             # so I need client_socket, and I will need to call the pdu class in order to do this
-            timestamp = self.client_pdu_obj.get_time()  # get timestamp
-            reserved_1 = self.null_byte
-            reserved_2 = self.null_byte
-            ACK_data = self.null_byte
-            checksum = self.client_pdu_obj.get_checksum(timestamp, ACK_data)
-            pdu_array = [DSMessageType.CAUTH, timestamp, DSCode.LOGIN_SUCCESS, DSFlags.finish, reserved_1,
-                         reserved_2,
-                         self.null_byte, ACK_data, checksum]
-
-            pdu = self.client_pdu_obj.pack(pdu_array)
-            self.client_socket.send(pdu)
-            self.server_logger.add_authenticated_client_connection(self.client_socket, self.client_address)
-
-            # Now send the document.txt to the client
             # at this point, we know the type of message sent,
-            message_type = self.error_correction_obj.get_message_type
-            timestamp = self.server_processor_pdu.get_time()  # get timestamp
-            error_code = DSCode.OK  # assign error code
+            recently_sent_data = self.error_correction_obj.sent_data
+            timestamp = self.client_pdu_obj.get_time()  # get timestamp
+            message_type = self.error_correction_obj.get_message_type()
+            error_code = DSCode.TIMEOUT  # assign error code
             flag = DSFlags.finish
             reserved_1 = self.null_byte
             reserved_2 = self.null_byte
             section_id = self.null_byte
-            data = b'HELLO'
-            checksum = self.server_processor_pdu.get_checksum(timestamp, data)
-            pdu_array = [message_type, timestamp, error_code, flag, reserved_1, reserved_2, section_id, data, checksum]
-            pdu = self.server_processor_pdu.pack(pdu_array)
+            ACK_data = self.null_byte
+            checksum = self.client_pdu_obj.get_checksum(timestamp, ACK_data)
+
+            checksum = self.client_pdu_obj.get_checksum(timestamp, recently_sent_data)
+            pdu_array = [message_type, timestamp, error_code, flag, reserved_1, reserved_2, section_id, recently_sent_data, checksum]
+            print(pdu_array)
+            pdu = self.client_pdu_obj.pack(pdu_array)
 
             self.client_socket.send(pdu)
-
-
-
 
             self.client_socket.send(recently_sent_data)
             pass

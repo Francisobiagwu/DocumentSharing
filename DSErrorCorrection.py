@@ -17,6 +17,7 @@ class DSErrorCorrection:
         self.checksum = ''
         self.message_type = ''
         self.flag = ''
+        self.error_code = ''
 
     def add_recently_sent_data(self, data, checksum, message_type, flag):
         """
