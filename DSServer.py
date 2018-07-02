@@ -66,7 +66,7 @@ class DSServer:
         self.__BUFFER_SIZE = client_pdu.get_size()  # set the buffer size
 
         client_error_correction = DSErrorCorrection()
-        client_timer = DSTimer(client_socket, client_pdu, client_error_correction)
+        client_timer = DSTimer(client_socket, client_address, client_pdu, client_error_correction)
 
         print(client_timer.is_ACK_received)
 

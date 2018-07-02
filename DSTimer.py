@@ -15,7 +15,7 @@ from DSServerLogManagement import DSServerLogManagement
 
 class DSTimer:
 
-    def __init__(self, client_socket, client_pdu_obj,
+    def __init__(self, client_socket, client_address, client_pdu_obj,
                  client_error_correction_obj):  # use default if the caller didn't specify
         self.count_down = 5
         self.inactivity = 30  # seconds
