@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/SecureDocumentSharing.iml" filepath="$PROJECT_DIR$/.idea/SecureDocumentSharing.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/documentSharing.iml" filepath="$PROJECT_DIR$/.idea/documentSharing.iml" />
     </modules>
   </component>
 </project>
