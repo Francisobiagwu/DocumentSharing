@@ -6,7 +6,7 @@ This is an application layer protocol designed using deterministic finite automa
 ## Getting Started
 download from the terminal using:
 ```
- git clone https://github.com/Francisobiagwu/SecureDocumentSharing/edit/master/README.md
+ git clone https://github.com/Francisobiagwu/DocumentSharing.git
 ```
 
 ### Prerequisites
