@@ -28,7 +28,7 @@ class DSTimer:
         self.null_byte = b'\x00'
         self.server_logger = DSServerLogManagement()
 
-    def start_timer(self):
+    def start_timer(self, message_type):
         # will stop once the count_down reaches 0 or when an ACK is received
         print('in start timer')
         # print('countdown {} is_ack_received: {}'.format(self.count_down, self.is_ACK_received))

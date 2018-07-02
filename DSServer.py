@@ -80,6 +80,8 @@ class DSServer:
         token_id = ''
 
 
+        # send connect message to the client and then start the timer immediately
+
         connect_thread = threading.Thread(target=self.connect, args=(
             client_state, client_pdu, client_socket, client_address, client_timer, client_error_correction))
         connect_thread.start()
