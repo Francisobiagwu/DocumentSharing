@@ -90,7 +90,7 @@ class DSServerResponseProcessor:
         print('Connected to the server')
         # print(self.error_code)
         # print(self.data)
-        self.send_ack()  # acknowledge receipt of connection
+        # self.send_ack()  # acknowledge receipt of connection
 
         message_type = DSMessageType.CONNECT
         timestamp = self.server_processor_pdu.get_time()  # get timestamp

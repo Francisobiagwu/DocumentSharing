@@ -11,6 +11,7 @@ from DSCodes import DSCode
 from DSFlags import DSFlags
 from DSMessageType import DSMessageType
 from DSServerLogManagement import DSServerLogManagement
+from DSErrorCorrection import DSErrorCorrection
 
 
 class DSTimer:
@@ -28,7 +29,7 @@ class DSTimer:
         self.null_byte = b'\x00'
         self.server_logger = DSServerLogManagement()
 
-    def start_timer(self, message_type):
+    def start_timer(self, error_correction_obj: DSErrorCorrection):
         # will stop once the count_down reaches 0 or when an ACK is received
         print('in start timer')
         # print('countdown {} is_ack_received: {}'.format(self.count_down, self.is_ACK_received))
@@ -57,6 +58,24 @@ class DSTimer:
             self.server_logger.add_authenticated_client_connection(self.client_socket, self.client_address)
 
             # Now send the document.txt to the client
+            # at this point, we know the type of message sent,
+            message_type = self.error_correction_obj.get_message_type
+            timestamp = self.server_processor_pdu.get_time()  # get timestamp
+            error_code = DSCode.OK  # assign error code
+            flag = DSFlags.finish
+            reserved_1 = self.null_byte
+            reserved_2 = self.null_byte
+            section_id = self.null_byte
+            data = b'HELLO'
+            checksum = self.server_processor_pdu.get_checksum(timestamp, data)
+            pdu_array = [message_type, timestamp, error_code, flag, reserved_1, reserved_2, section_id, data, checksum]
+            pdu = self.server_processor_pdu.pack(pdu_array)
+
+            self.client_socket.send(pdu)
+
+
+
+
             self.client_socket.send(recently_sent_data)
             pass
 

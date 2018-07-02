@@ -16,18 +16,25 @@ class DSErrorCorrection:
         self.key = ''
         self.checksum = ''
         self.message_type = ''
+        self.flag = ''
 
-    def add_recently_sent_data(self, data, checksum, message_type):
+    def add_recently_sent_data(self, data, checksum, message_type, flag):
         """
         Used to add recently sent data such that if the client didn't receive data within 5 seconds window, data is
         automatically resent to the client
         :param data: data sent to the client
         :param checksum: the calculated checksum sent to the client
         :param message_type: the type of message sent to the client. Eg DSMessage.CAUTH
+        :param flag: This data tells the client if the server is still sending message
         :return: None
         """
-        self.sent_data = {}
-        self.sent_data.update({data: (message_type, checksum)})
+        self.sent_data_dic = {}
+        self.sent_data = data
+        self.message_type = message_type
+        self.checksum = checksum
+        self.flag = flag
+
+        self.sent_data_dic.update({data: (message_type, checksum, flag)})
 
     def is_data_received(self, given_checksum):
         """
@@ -36,12 +43,8 @@ class DSErrorCorrection:
         :return:
         """
         print(self.sent_data, given_checksum)
-        checksum = [value[0] for value in self.sent_data.values()][0]
-        self.checksum = checksum
-        message_type = [value[1] for value in self.sent_data.values()][0]
-        self.message_type = message_type
-        print(checksum, message_type)
-        if given_checksum == checksum:
+
+        if given_checksum == self.checksum:
             return True
         else:
             return False
@@ -59,8 +62,11 @@ class DSErrorCorrection:
         return self.message_type
 
 
+    def get_flag(self):
+        return self.flag
+
+
     def get_recently_sent_data(self):
         data = self.sent_data.values()
 
 
-test = DSErrorCorrection('francis', 33333, 'ACK')

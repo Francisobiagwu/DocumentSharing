@@ -169,11 +169,14 @@ class DSServer:
         data = b'HELLO CLIENT'
         section_id = self.null_byte
         checksum = client_pdu.get_checksum(timestamp, data)
+        flag = DSFlags.finish
 
         # add recently sent data to the error-correction-tracker
-        client_error_correction.add_recently_sent_data(data, checksum, message_type)
-        pdu_array = [message_type, timestamp, DSCode.OK, DSFlags.finish, reserved_1, reserved_2, section_id,
+
+        pdu_array = [message_type, timestamp, DSCode.OK, flag, reserved_1, reserved_2, section_id,
                      data, checksum]
+        client_error_correction.add_recently_sent_data(data, checksum, message_type, flag)
+
 
         ##################################
         # set state#
