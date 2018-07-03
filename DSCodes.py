@@ -40,7 +40,7 @@ class DSCode:
             return '----Section successfully retrieved----'
 
         elif code == DSCode.COMMIT_SUCCESS:
-            return
+            return '----Section successfully committed----'
 
 
 
