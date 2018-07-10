@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 
-__author__ = "Francis Obiagwu"
-__copyright__ = "Copyright 2018"
-__version__ = "1.0"
-
+"""
+@author: Francis Obiagwu
+@software: SecureDocumentSharing
+@file: DSPdu.py
+@time: 6/6/18 7:16 PM
+"""
+import binascii
 import struct
 from datetime import datetime
-import binascii
+
 from DSCodes import DSCode
 from DSDocument import DSDocument
 

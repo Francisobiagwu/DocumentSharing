@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
-__author__ = "Francis Obiagwu"
-__copyright__ = "Copyright 2018"
-__version__ = "1.0"
+"""
+@author: Francis Obiagwu
+@software: SecureDocumentSharing
+@file: DSCode.py
+@time: 6/6/18 7:16 PM
+"""
 
 class DSCode:
     OK = 000

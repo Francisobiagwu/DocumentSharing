@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 
-__author__ = "Francis Obiagwu"
-__copyright__ = "Copyright 2018"
-__version__ = "1.0"
+"""
+@author: Francis Obiagwu
+@software: SecureDocumentSharing
+@file: DSServerResponseProcessor.py
+@time: 6/6/18 7:16 PM
+"""
 
+from DSCodes import DSCode
+from DSFlags import DSFlags
 from DSMessageType import DSMessageType
 from DSPdu import DSPdu
-from DSFlags import DSFlags
-from DSCodes import DSCode
 
 
 class DSServerResponseProcessor:

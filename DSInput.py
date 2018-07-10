@@ -1,14 +1,18 @@
 #!/usr/bin/env python
 
-__author__ = "Francis Obiagwu"
-__copyright__ = "Copyright 2018"
-__version__ = "1.0"
+"""
+@author: Francis Obiagwu
+@software: SecureDocumentSharing
+@file: DSInput.py
+@time: 6/6/18 7:16 PM
+"""
 
-from DSPdu import DSPdu
-from DSCodes import DSCode
-from DSMessageType import DSMessageType
-from DSFlags import DSFlags
 import math
+
+from DSCodes import DSCode
+from DSFlags import DSFlags
+from DSMessageType import DSMessageType
+from DSPdu import DSPdu
 
 
 class DSInput:
