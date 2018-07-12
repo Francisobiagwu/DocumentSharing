@@ -5,9 +5,6 @@
 @time: 6/26/18 8:15 PM
 """
 
-__author__ = "Francis Obiagwu"
-__copyright__ = "Copyright 2018"
-__version__ = "1.0"
 
 
 class DSErrorCorrection:
