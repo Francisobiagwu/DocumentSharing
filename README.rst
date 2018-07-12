@@ -1,7 +1,7 @@
 
 
-.. image:: https://img.shields.io/pypi/pyversions/colorama.svg
-    :target: https://pypi.org/project/colorama/
+.. image:: https://github.com/Francisobiagwu/DocumentSharing/blob/master/pythonVersion.svg
+    :target: https://github.com/Francisobiagwu/DocumentSharing
     :alt: Supported Python versions
 
 
