@@ -16,7 +16,7 @@ from DSPdu import DSPdu
 
 
 class DSInput:
-    def __init__( self ):
+    def __init__(self):
         self.user_input = ''
         self.isValid = False
         self.ds_pdu = DSPdu()
@@ -25,13 +25,12 @@ class DSInput:
         self.data = ''
         self.array = ''
 
-    def get_user_input( self ):
+    def get_user_input(self):
         """
         Gets user input and then formats then return them as string arrays
         :return: list
         """
         # if the didn't enter any value continue to prompt until a value is entered
-
 
         while True:
             self.user_input = input()
@@ -72,7 +71,7 @@ class DSInput:
             else:
                 print('User input is not valid', array, len(array))
 
-    def get_array( self, user_input ):
+    def get_array(self, user_input):
         """
         Gets returns an array of the user_input
         :param string user_input:
@@ -88,10 +87,10 @@ class DSInput:
         self.reset_user_input()
         return array
 
-    def reset_user_input( self ):
+    def reset_user_input(self):
         self.user_input = ''
 
-    def process_user_input( self, array, data ):
+    def process_user_input(self, array, data):
         """
         Process user input and return the array for packing
         :param list array:
@@ -105,27 +104,22 @@ class DSInput:
         if array[0] == 'LOGIN':
             return self.login()
 
-
         elif array[0] == 'SECTION':
             return self.section()
-
 
         elif array[0] == 'RELEASE':
             return self.release()
 
-
         elif array[0] == 'COMMIT':
             return self.commit()
-
 
         elif array[0] == 'LOGOFF':
             return self.logoff()
 
-
         else:
             print('User input not valid')
 
-    def login( self ):
+    def login(self):
         message_type = DSMessageType.CAUTH
         timestamp = self.ds_pdu.get_time()  # get timestamp
         error_code = self.ds_code.OK  # assign error code
@@ -139,7 +133,7 @@ class DSInput:
 
         return pdu_array
 
-    def section( self):
+    def section(self):
         message_type = DSMessageType.S_EDIT
         timestamp = self.ds_pdu.get_time()  # get timestamp
         error_code = self.ds_code.OK  # assign error code
@@ -152,7 +146,7 @@ class DSInput:
         pdu_array = [message_type, timestamp, error_code, flag, reserved_1, reserved_2, section_id, data, checksum]
         return pdu_array
 
-    def release( self ):
+    def release(self):
         message_type = DSMessageType.S_RELEASE
         timestamp = self.ds_pdu.get_time()  # get timestamp
         error_code = self.ds_code.OK  # assign error code
@@ -166,7 +160,7 @@ class DSInput:
 
         return pdu_array
 
-    def commit( self ):
+    def commit(self):
         data = self.array[2:]  # this will ensure that other sentences separated by comma's are used as data
         # data is retrieved as list, we need to extract it as string
         data = data[0]
@@ -208,7 +202,7 @@ class DSInput:
 
         return arr  # we are only returning array during the commit
 
-    def logoff( self ):
+    def logoff(self):
         message_type = DSMessageType.ABORT
         timestamp = self.ds_pdu.get_time()  # get timestamp
         error_code = self.ds_code.OK  # assign error code
@@ -222,7 +216,7 @@ class DSInput:
 
         return pdu_array
 
-    def break_data( self, data ):
+    def break_data(self, data):
         print('WE are in break data')
         print('DATA : {}'.format(data))
 
