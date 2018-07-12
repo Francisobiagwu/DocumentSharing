@@ -22,7 +22,7 @@ class DSClient:
     to be started first before starting the client object
     """
     __BUFFER_SIZE = None
-    __PORT = 5000
+    __PORT = 5001
     __TCP_IP = '127.0.0.1'
     __CLIENT__SOCKET = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     placement = 0

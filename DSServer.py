@@ -29,7 +29,7 @@ class DSServer:
     Used to create our server object
     """
     __BUFFER_SIZE = None
-    __PORT = 5000
+    __PORT = 5001
     __TCP_IP = '127.0.0.1'
     __SERVER_SOCKET = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     __username = 'Admin'
