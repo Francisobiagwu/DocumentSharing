@@ -63,7 +63,7 @@ class DSClient:
         while not self.first_message_recvd:
             # wait here until the server sends you the first message
             pdu = self.__CLIENT__SOCKET.recv(self.__BUFFER_SIZE)
-            print(pdu)
+            #print(pdu)
             array = self.client_pdu.remove_padding(self.client_pdu.unpack(pdu))
             if self.server_response_processor.process_response(array, self.__CLIENT__SOCKET, self):
                 break
@@ -77,22 +77,22 @@ class DSClient:
         while True:
 
             array, string_array = self.input_processor.get_user_input()  # return the user input as array and as string
-            print(array)
+            #print(array)
             if array[0] == 'COMMIT':
                 # process differently
                 # print(array, string_array)
                 commit_pdu_array = self.input_processor.process_user_input(array, string_array)
-                print(commit_pdu_array)
+                #print(commit_pdu_array)
                 # print('---------------------------')
                 # print(commit_pdu_array)
                 # print('---------------------------')
                 for item in commit_pdu_array:
-                    print(item)
+                    #print(item)
                     pdu = self.client_pdu.pack(item)
                     self.__CLIENT__SOCKET.send(pdu)
                 pass
 
-                print('----------------------------')
+
             else:
                 pdu_array = self.input_processor.process_user_input(array, string_array)  # obtain the pdu as byte
                 pdu = self.client_pdu.pack(pdu_array)
@@ -108,7 +108,7 @@ class DSClient:
             try:
                 pdu = self.__CLIENT__SOCKET.recv(self.__BUFFER_SIZE)
                 unpacked_pdu = self.client_pdu.unpack(pdu)
-                print(unpacked_pdu)
+                #print(unpacked_pdu)
                 unpacked_no_pad = self.client_pdu.remove_padding(unpacked_pdu)
                 self.server_response_processor.process_response(unpacked_no_pad, self.__CLIENT__SOCKET, self)
 

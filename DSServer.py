@@ -193,65 +193,90 @@ class DSServer:
         # verify if the client presented a valid credentials
         # send an ACK to inform the client that they have been authenticated
         print(self.color.green('hey'))
-        _, username, password, document_name = data.split(',')
+
         if client_error_code is None:
             error_code = DSCode.LOGIN_SUCCESS
+            _, username, password, document_name = data.split(',')
+
+            if username == self.authentication.get_username() and password == self.authentication.get_password() and document_name == self.authentication.get_document_name():
+                # timestamp = client_pdu.get_time()  # get timestamp
+                # reserved_1 = self.null_byte
+                # reserved_2 = self.null_byte
+                # ACK_data = self.null_byte
+                # checksum = client_pdu.get_checksum(timestamp, ACK_data)
+                # pdu_array = [DSMessageType.CAUTH, timestamp, error_code, DSFlags.finish, reserved_1, reserved_2,
+                #              self.null_byte, ACK_data, checksum]
+                #
+                #
+                # pdu = client_pdu.pack(pdu_array)
+                # client_socket.send(pdu)
+                # self.server_log_manager.add_authenticated_client_connection(client_socket, client_address)
+
+                # Now send the document.txt to the client
+                data_string = self.ds_document.get_document_as_string()  # get the entire document.txt as string
+                data_break_down = self.ds_document.break_data(data_string)
+
+                freq_to_send = len(data_break_down)
+                count = 0
+
+                for item in data_break_down:  # we don't care about the document.txt flags about sections taken/free
+                    count += 1
+                    timestamp = client_pdu.get_time()  # get timestamp
+                    error_code = DSCode.LOGIN_SUCCESS  # assign error code
+                    if count == freq_to_send:
+                        flag = DSFlags.finish
+                    else:
+                        flag = DSFlags.more
+
+                    reserved_1 = self.null_byte
+                    reserved_2 = self.null_byte
+                    section_id = str(count - 1).encode()
+                    data = item  # verify if the data is already encoded
+                    checksum = client_pdu.get_checksum(timestamp, data)
+                    pdu_array = [DSMessageType.CAUTH, timestamp, error_code, flag, reserved_1, reserved_2, section_id,
+                                 data,
+                                 checksum]
+                    pdu = client_pdu.pack(pdu_array)
+                    #############################################
+                    # SEND THE DOCUMENT
+                    #############################################
+                    client_socket.send(pdu)
+                    ##################################
+                    # set state#
+                    ##################################
+                    client_state.set_state(DSState.AUTHENTICATED)
+                    print('item : {}'.format(item))
+                    print('pdu before send: {}'.format(pdu))
+
+            else:
+                client_state.CONNECTED
+                print(self.color.red('Client presented wrong credentials'))
+                self.connect(client_state, client_pdu, client_socket, client_address, client_error_correction,
+                             DSCode.LOGIN_NOT_SUCCESS)
         else:
             error_code = client_error_code
-
-        if username == self.authentication.get_username() and password == self.authentication.get_password() and document_name == self.authentication.get_document_name():
             timestamp = client_pdu.get_time()  # get timestamp
+            error_code = DSCode.LOGIN_SUCCESS  # assign error code
+
             reserved_1 = self.null_byte
             reserved_2 = self.null_byte
-            ACK_data = self.null_byte
-            checksum = client_pdu.get_checksum(timestamp, ACK_data)
-            pdu_array = [DSMessageType.CAUTH, timestamp, error_code, DSFlags.finish, reserved_1, reserved_2,
-                         self.null_byte, ACK_data, checksum]
-
+            section_id = section_id
+            data = data  # verify if the data is already encoded
+            checksum = client_pdu.get_checksum(timestamp, data)
+            pdu_array = [DSMessageType.CAUTH, timestamp, error_code, DSFlags.finish, reserved_1, reserved_2, section_id,
+                         data,
+                         checksum]
+            pdu = client_pdu.pack(pdu_array)
+            #############################################
+            # SEND THE DOCUMENT
+            #############################################
+            client_socket.send(pdu)
             ##################################
             # set state#
             ##################################
             client_state.set_state(DSState.AUTHENTICATED)
-            pdu = client_pdu.pack(pdu_array)
-            client_socket.send(pdu)
-            self.server_log_manager.add_authenticated_client_connection(client_socket, client_address)
 
-            # Now send the document.txt to the client
-            data_string = self.ds_document.get_document_as_string()  # get the entire document.txt as string
-            data_break_down = self.ds_document.break_data(data_string)
 
-            freq_to_send = len(data_break_down)
-            count = 0
-
-            for item in data_break_down:  # we don't care about the document.txt flags about sections taken/free
-                count += 1
-                timestamp = client_pdu.get_time()  # get timestamp
-                error_code = DSCode.LOGIN_SUCCESS  # assign error code
-                if count == freq_to_send:
-                    flag = DSFlags.finish
-                else:
-                    flag = DSFlags.more
-
-                reserved_1 = self.null_byte
-                reserved_2 = self.null_byte
-                section_id = str(count - 1).encode()
-                data = item  # verify if the data is already encoded
-                checksum = client_pdu.get_checksum(timestamp, data)
-                pdu_array = [DSMessageType.CAUTH, timestamp, error_code, flag, reserved_1, reserved_2, section_id, data,
-                             checksum]
-                pdu = client_pdu.pack(pdu_array)
-                #############################################
-                # SEND THE DOCUMENT
-                #############################################
-                client_socket.send(pdu)
-                print('item : {}'.format(item))
-                print('pdu before send: {}'.format(pdu))
-
-        else:
-            client_state.CONNECTED
-            print(self.color.red('Client presented wrong credentials'))
-            self.connect(client_state, client_pdu, client_socket, client_address, client_error_correction,
-                         DSCode.LOGIN_NOT_SUCCESS)
 
     def s_edit(self, section_id, client_state, client_pdu, client_socket, client_address, client_error_correction,
                client_error_code=None):
@@ -359,6 +384,8 @@ class DSServer:
                  client_error_correction,
                  client_error_code=None):
         print('in the server commit section ')
+        print('authenticated clients: {}'.format(self.server_log_manager.get_authenticated_clients()))
+        print('section owners: {}'.format(self.server_log_manager.get_section_owners().values()))
         # we have to verify if the client have token for the section to which they are committing
 
         # if the client exists in the list of authenticated clients and the client possesses the token for the section
@@ -426,8 +453,8 @@ class DSServer:
 
 
         # if the client exist in the authenticated client list but the client doesn't possess the token for the section which they are requesting
-
         elif client_socket in self.server_log_manager.get_authenticated_clients() and client_address not in self.server_log_manager.get_section_owners().values():
+
             print(self.color.red('testing'))
             print('testing for the keys')
             x = [value for value in self.server_log_manager.get_section_owners().values()]
