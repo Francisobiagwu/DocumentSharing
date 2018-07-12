@@ -5,8 +5,6 @@
 @time: 7/11/18 5:59 PM
 """
 
-from colorama.colorama import init
-
 
 class Color:
     """
@@ -157,4 +155,3 @@ class Style:
         :return: Italised string
         """
         return self.CITALIC + text + self.CEND
-
