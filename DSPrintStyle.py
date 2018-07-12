@@ -156,6 +156,3 @@ class Style:
         return self.CITALIC + text + self.CEND
 
 
-color = Color()
-print(color.print_red('Anthony'))
-print(color.print_red(color.blink('Francis')))
