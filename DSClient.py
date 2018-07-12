@@ -79,6 +79,16 @@ class DSClient:
         # self.__CLIENT__SOCKET.send(pdu)
         # ###test
 
+        array, string_array = self.input_processor.get_user_input()  # return the user input as array and as string
+        pdu_array = self.input_processor.process_user_input(array, string_array)
+        print('pdu after process user input: {}'.format(pdu_array))
+        pdu = self.client_pdu.pack(pdu_array)
+        print(pdu_array)
+        print(pdu)
+        self.__CLIENT__SOCKET.send(pdu)
+
+
+
         while True:
             array, string_array = self.input_processor.get_user_input()  # return the user input as array and as string
             print(array)

@@ -9,16 +9,14 @@ import time
 
 from DSCodes import DSCode
 from DSFlags import DSFlags
-from DSMessageType import DSMessageType
 from DSServerLogManagement import DSServerLogManagement
-from DSErrorCorrection import DSErrorCorrection
-from DSServerResponseProcessor import DSServerResponseProcessor
+
 
 class DSTimer:
 
     def __init__(self, client_socket, client_address, client_pdu_obj,
                  client_error_correction_obj):  # use default if the caller didn't specify
-        self.count_down = 5
+        self.count_down = 20
         self.inactivity = 30  # seconds
         self.timer_finished = False
         self.is_ACK_received = False

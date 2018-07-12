@@ -9,6 +9,7 @@
 class DSAuthentication:
     password = 'root'
     username = 'Admin'
+    document_name = 'example1'
 
     def get_username(self):
         return self.username
