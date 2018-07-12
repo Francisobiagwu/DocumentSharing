@@ -35,7 +35,7 @@ class DSClient:
         self.done_processing = False
         self.client_ds_code = DSCode()
         self.request_index, self.timestamp_index, self.error_code_index, self.flag_index, self.reserved_1_index, self.reserved_2_index, self.reserved_3_index, self.data_index, self.checksum_index = DSPdu().get_pdu_parts_index()
-        self.null_byte = b'\x00'  # used in place of data when is not need to send data during S_DENIED, CAUTH etc
+        self.null_byte = b'\x00'  # used in place of data when there is not data to send
         self.input_processor = DSInput()
         self.server_response_processor = DSServerResponseProcessor()
         has_token = False  # used to track if the client has been issued a token
@@ -108,7 +108,6 @@ class DSClient:
             try:
                 pdu = self.__CLIENT__SOCKET.recv(self.__BUFFER_SIZE)
                 unpacked_pdu = self.client_pdu.unpack(pdu)
-                print(unpacked_pdu)
                 unpacked_no_pad = self.client_pdu.remove_padding(unpacked_pdu)
                 self.server_response_processor.process_response(unpacked_no_pad, self.__CLIENT__SOCKET, self)
 
