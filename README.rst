@@ -4,9 +4,6 @@
     :target: https://pypi.org/project/colorama/
     :alt: Supported Python versions
 
-.. image:: https://travis-ci.org/tartley/colorama.svg?branch=master
-    :target: https://travis-ci.org/tartley/colorama
-    :alt: Build Status
 
 Download and docs:
     https://github.com/Francisobiagwu/DocumentSharing
@@ -25,6 +22,7 @@ Getting Started
 download from the terminal using:
 
 .. code-block:: python
+
     git clone https://github.com/Francisobiagwu/DocumentSharing.git
 
 
@@ -38,10 +36,12 @@ Installing
 From the terminal navigate to the folder where Document sharing software resides
 To run server
 .. code-block:: python
+
     python3 DSServer.py
 
 To run client
 .. code-block:: python
+
     python3 DSClient.py
 
 
@@ -53,18 +53,23 @@ LOGIN
 .. code-block:: python
     LOGIN, USERNAME, PASSWORD, DOCUMENT_NAME 
 
+REQUEST DOCUMENT SECTION TO EDIT
+=============================
+.. code-block:: python
 
-## REQUEST DOCUMENT SECTION TO EDIT
-```
-SECTION, SECTION_ID
-```
+    SECTION, SECTION_ID
 
-## COMMIT SECTION
-```
-COMMIT, SECTION_ID, DATA 
-```
 
-## LOGOFF
-```
-LOGOFF      
-```
+COMMIT SECTION
+=======================
+.. code-block:: python
+
+    COMMIT, SECTION_ID, DATA 
+
+
+LOGOFF
+======================
+.. code-block:: python
+
+    LOGOFF      
+
