@@ -6,7 +6,7 @@
 """
 
 
-class SDSAuthentication:
+class DSAuthentication:
     password = 'root'
     username = 'Admin'
 
