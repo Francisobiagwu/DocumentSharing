@@ -9,19 +9,19 @@
     :alt: Build Status
 
 Download and docs:
-    https://pypi.org/project/colorama/
+    https://github.com/Francisobiagwu/DocumentSharing
+    
 Source code & Development:
-    https://github.com/tartley/colorama
+   https://github.com/Francisobiagwu/DocumentSharing
 
 Description
 ===========
 
-
-# DOCUMENT SHARING SOFTWARE
-
 This is an application layer protocol designed using deterministic finite automata. This document sharing software is similar to the Google document application that allows users authenticated users to edit, save selected document.
 
-## Getting Started
+
+Getting Started
+==============
 download from the terminal using:
 ```
  git clone https://github.com/Francisobiagwu/DocumentSharing.git
