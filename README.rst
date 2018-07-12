@@ -49,8 +49,8 @@ From the client use the following commands to perform the required action
 
 LOGIN
 ==========
-
 .. code-block:: python
+
     LOGIN, USERNAME, PASSWORD, DOCUMENT_NAME 
 
 REQUEST DOCUMENT SECTION TO EDIT
