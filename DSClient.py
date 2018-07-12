@@ -17,7 +17,6 @@ from DSServerResponseProcessor import DSServerResponseProcessor
 
 
 class DSClient:
-
     """
     The DSClient class is used to create a client connection. To avoid error, the server object has
     to be started first before starting the client object
@@ -111,7 +110,6 @@ class DSClient:
                 unpacked_pdu = self.client_pdu.unpack(pdu)
                 unpacked_no_pad = self.client_pdu.remove_padding(unpacked_pdu)
                 self.server_response_processor.process_response(unpacked_no_pad, self.__CLIENT__SOCKET)
-
 
 
             except ConnectionResetError as err:
