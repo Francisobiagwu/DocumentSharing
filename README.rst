@@ -23,37 +23,36 @@ This is an application layer protocol designed using deterministic finite automa
 Getting Started
 ==============
 download from the terminal using:
-```
- git clone https://github.com/Francisobiagwu/DocumentSharing.git
-```
 
-### Prerequisites
+.. code-block:: python
+    git clone https://github.com/Francisobiagwu/DocumentSharing.git
 
 
-
-```
+Prerequisites
+=============
 Python3 
-```
 
-### Installing
+Installing
+===========
 
 From the terminal navigate to the folder where Document sharing software resides
 To run server
-```
-python3 DSServer.py
-```
+.. code-block:: python
+    python3 DSServer.py
+
 To run client
-```
-python3 DSClient.py
-```
+.. code-block:: python
+    python3 DSClient.py
+
 
 From the client use the following commands to perform the required action
 
-## LOGIN
+LOGIN
+==========
 
-````
-LOGIN, USERNAME, PASSWORD, DOCUMENT_NAME 
-````
+.. code-block:: python
+    LOGIN, USERNAME, PASSWORD, DOCUMENT_NAME 
+
 
 ## REQUEST DOCUMENT SECTION TO EDIT
 ```
