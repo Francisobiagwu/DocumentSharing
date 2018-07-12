@@ -11,12 +11,21 @@ from DSCodes import DSCode
 from DSFlags import DSFlags
 from DSMessageType import DSMessageType
 from DSPdu import DSPdu
+from DSPrintStyle import Color, Style
 
 
 class DSServerResponseProcessor:
     """
     This class in charge of processing server replies
     """
+
+    global color
+    global style
+    global error
+    color = Color()
+    style = Style()
+    error = DSCode()
+    is_logged_in = False
 
     def __init__( self ):
         self.message_type = ''
@@ -36,7 +45,7 @@ class DSServerResponseProcessor:
         self.client_socket = ''
         self.message_type_index, self.timestamp_index, self.error_code_index, self.flag_index, self.reserved_1_index, self.reserved_2_index, self.section_id_index, self.data_index, self.checksum_index = self.server_processor_pdu.get_pdu_parts_index()
 
-    def process_response( self, response, client_socket ):
+    def process_response(self, response, client_socket, client_obj):
         """
         This is the main response processor
         :param response: pdu array
@@ -57,6 +66,29 @@ class DSServerResponseProcessor:
         self.data = self.response[self.data_index]
         self.checksum = self.response[self.checksum_index]
         self.client_socket = client_socket
+
+        if client_obj.is_authenticated == False and self.error_code == DSCode.LOGIN_SUCCESS:
+            print(color.red(error.dscode_print(self.error_code)))
+            client_obj.is_authenticated = True
+
+        elif client_obj.is_authenticated == True and self.error_code != DSCode.LOGIN_SUCCESS:
+            print(color.red('checking this out'))
+            print(self.error_code)
+            print(color.red(error.dscode_print(self.error_code)))
+
+        elif self.error_code == DSCode.LOGIN_NOT_SUCCESS:
+            client_obj.is_authenticated = False
+            print(color.red(error.dscode_print(self.error_code)))
+
+        elif self.error_code == DSCode.SECTION_DENIED:
+            print(color.red(error.dscode_print(self.error_code)))
+
+
+        elif self.error_code == DSCode.USER_NOT_AUTHENTICATED:
+            print(color.red(error.dscode_print(self.error_code)))
+
+        else:
+            pass
 
         if self.response[self.message_type_index] == DSMessageType.CONNECT.decode():
             self.connect()
@@ -86,14 +118,6 @@ class DSServerResponseProcessor:
             return False
 
     def connect( self ):
-        # test
-        import time
-        time.sleep(1)
-
-        print('Connected to the server')
-        # print(self.error_code)
-        # print(self.data)
-        # self.send_ack()  # acknowledge receipt of connection
 
         message_type = DSMessageType.CONNECT
         timestamp = self.server_processor_pdu.get_time()  # get timestamp
@@ -108,8 +132,10 @@ class DSServerResponseProcessor:
         pdu = self.server_processor_pdu.pack(pdu_array)
 
         self.client_socket.send(pdu)
+        print(color.green('{:^60}'.format('--Welcome to Document Sharing Software 1.0--')))
         print('------------------------COMMANDS----------------------------\n'
               'LOGIN: LOGIN, USERNAME, PASSWORD, DOCUMENT_NAME             |\n'
+              'CREATE NEW DOCUMENT: CREATE, DOCUMENT_NAME                  |\n'
               'REQUEST SECTION: SECTION, SECTION_ID,                       |\n'
               'COMMIT: COMMIT, SECTION_ID, DATA                            |\n'
               'LOGOFF: LOGOFF                                              |\n'

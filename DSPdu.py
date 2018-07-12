@@ -11,7 +11,6 @@ import struct
 from datetime import datetime
 
 from DSCodes import DSCode
-from DSDocument import DSDocument
 
 
 class DSPdu:
@@ -25,19 +24,20 @@ class DSPdu:
         """
         This is used to initialize the pdu components and their respective sizes
         """
-        ##########################
-        # MESSAGE_TYPE    : 12 BYTES  #
-        # TIMESTAMP  : 32 BYTES  #
-        # ERROR CODE : 4 BYTES   #
-        # FLAGS      : 6 BYTES   #
-        # RESERVED 1 : 32 BYTES  #
-        # RESERVED 2 : 32 BYTES  #
-        # SECTION_ID : 32 BYTES  #
-        # DATA       : 100 BYTES #
-        # CHECKSUM   : 8 BYTES   #
-        ##########################
-        # TOTAL      : 658 BYTES #
-        ##########################
+        ###############################
+        # MESSAGE_TYPE:     12 BYTES  #
+        # TIMESTAMP  :      32 BYTES  #
+        # ERROR CODE :      4 BYTES   #
+        # FLAGS      :      6 BYTES   #
+        # RESERVED 1 :      32 BYTES  #
+        # RESERVED 2 :      32 BYTES  #
+        # SECTION_ID :      32 BYTES  #
+        # DATA       :      100 BYTES #
+        # CHECKSUM   :      8 BYTES   #
+        ###############################
+        # TOTAL      :      658 BYTES #
+        ###############################
+
         array = [('MESSAGE_TYPE', '12s'), ('TIMESTAMP', '32s'), ('ERROR_CODES', 'i'), ('FLAG', '6s'),
                  ('RESERVED-1', '32s'), ('RESERVED-2', '32s'), ('SECTION-ID', '32s'),
                  ('DATA', '100s'), ('CHECKSUM', 'q')]

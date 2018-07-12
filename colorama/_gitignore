@@ -1,0 +1,13 @@
+*.pyc
+*.egg-info
+.coverage
+.pytest_cache/
+.tox/
+MANIFEST
+dist
+tags
+virtualenv
+build
+
+# PyCharm
+.idea

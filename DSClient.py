@@ -42,10 +42,16 @@ class DSClient:
 
         self.first_message_recvd = False  # used to track if the client have received the first 'CONNECT' message
         self.placement = 0
+        self.is_authenticated = False
 
     def start( self ):
+        """
+        Used to start the client
+        :return: None
+        """
         try:
             self.__CLIENT__SOCKET.connect((self.__TCP_IP, self.__PORT))
+            print('client successfully connected')
         except ConnectionRefusedError as err:
             print(err.args)
             sys.exit(1)
@@ -57,8 +63,9 @@ class DSClient:
         while not self.first_message_recvd:
             # wait here until the server sends you the first message
             pdu = self.__CLIENT__SOCKET.recv(self.__BUFFER_SIZE)
+            print(pdu)
             array = self.client_pdu.remove_padding(self.client_pdu.unpack(pdu))
-            if self.server_response_processor.process_response(array, self.__CLIENT__SOCKET):
+            if self.server_response_processor.process_response(array, self.__CLIENT__SOCKET, self):
                 break
             else:
                 print('The server doesn\'t want to talk to you')
@@ -67,29 +74,8 @@ class DSClient:
         # run the thread to receive pdu from the server, this thread runs forever
         recv_thread = threading.Thread(target=self.receiving_thread).start()
 
-        #
-        # ###########test
-        # array = ['LOGIN', 'Admin', 'root', 'example1']
-        # string_array = ','.join(array)
-        # pdu_array = self.input_processor.process_user_input(array, string_array)
-        # print('pdu after process user input: {}'.format(pdu_array))
-        # pdu = self.client_pdu.pack(pdu_array)
-        # print(pdu_array)
-        # print(pdu)
-        # self.__CLIENT__SOCKET.send(pdu)
-        # ###test
-
-        array, string_array = self.input_processor.get_user_input()  # return the user input as array and as string
-        pdu_array = self.input_processor.process_user_input(array, string_array)
-        print('pdu after process user input: {}'.format(pdu_array))
-        pdu = self.client_pdu.pack(pdu_array)
-        print(pdu_array)
-        print(pdu)
-        self.__CLIENT__SOCKET.send(pdu)
-
-
-
         while True:
+
             array, string_array = self.input_processor.get_user_input()  # return the user input as array and as string
             print(array)
             if array[0] == 'COMMIT':
@@ -114,13 +100,17 @@ class DSClient:
                 self.__CLIENT__SOCKET.send(pdu)  # send
 
     def receiving_thread( self ):
+        """
+        Used to run the receiving thread forever
+        :return: None
+        """
         while True:
             try:
                 pdu = self.__CLIENT__SOCKET.recv(self.__BUFFER_SIZE)
                 unpacked_pdu = self.client_pdu.unpack(pdu)
+                print(unpacked_pdu)
                 unpacked_no_pad = self.client_pdu.remove_padding(unpacked_pdu)
-                self.server_response_processor.process_response(unpacked_no_pad, self.__CLIENT__SOCKET)
-
+                self.server_response_processor.process_response(unpacked_no_pad, self.__CLIENT__SOCKET, self)
 
             except ConnectionResetError as err:
                 print(err.args)

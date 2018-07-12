@@ -13,6 +13,7 @@ from DSCodes import DSCode
 from DSFlags import DSFlags
 from DSMessageType import DSMessageType
 from DSPdu import DSPdu
+from DSPrintStyle import Color, Style
 
 
 class DSInput:
@@ -24,6 +25,8 @@ class DSInput:
         self.null_byte = b'\x00'
         self.data = ''
         self.array = ''
+        self.color = Color()
+        self.style = Style()
 
     def get_user_input(self):
         """
@@ -50,7 +53,7 @@ class DSInput:
                     print('User input is not valid')
                     continue
 
-            elif array[0] == 'COMMIT':
+            elif array[0] == 'COMMIT' and len(array) == 3:
                 try:
                     int(array[1])
                     self.reset_user_input()
@@ -69,7 +72,9 @@ class DSInput:
                 return array, ','.join(array)
 
             else:
-                print('User input is not valid', array, len(array))
+                print(self.color.red('User input is not valid'), end='')
+                print(array, len(array))
+                print('Follow the instruction and enter input using the format on the instruction')
 
     def get_array(self, user_input):
         """

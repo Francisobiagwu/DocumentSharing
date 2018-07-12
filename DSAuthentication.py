@@ -9,7 +9,7 @@
 class DSAuthentication:
     password = 'root'
     username = 'Admin'
-    document_name = 'example1'
+    document_name = 'document'
 
     def get_username(self):
         return self.username
@@ -22,3 +22,6 @@ class DSAuthentication:
 
     def set_password(self, password):
         self.password = password
+
+    def get_document_name(self):
+        return self.document_name

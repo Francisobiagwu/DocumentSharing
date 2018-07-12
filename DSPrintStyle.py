@@ -5,6 +5,8 @@
 @time: 7/11/18 5:59 PM
 """
 
+from colorama.colorama import init
+
 
 class Color:
     """
@@ -12,6 +14,7 @@ class Color:
     """
 
     def __init__(self):
+        init()
         self.CRED = '\033[91m'
         self.CEND = '\033[0m'
         self.CEND = '\33[0m'
@@ -58,7 +61,7 @@ class Color:
         :param text: String
         :return: red String
         """
-        return self.CRED + text + self.CEND
+        return self.CEND + self.CRED + text + self.CEND
 
     def green(self, text):
         """
@@ -154,5 +157,4 @@ class Style:
         :return: Italised string
         """
         return self.CITALIC + text + self.CEND
-
 
