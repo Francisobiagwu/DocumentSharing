@@ -5,6 +5,8 @@
 @time: 7/11/18 5:59 PM
 """
 
+from pip._vendor import colorama
+
 
 class Color:
     """
@@ -12,7 +14,7 @@ class Color:
     """
 
     def __init__(self):
-        init()
+        colorama.init()
         self.CRED = '\033[91m'
         self.CEND = '\033[0m'
         self.CEND = '\33[0m'
@@ -144,7 +146,7 @@ class Style:
         """
         Used to return bold string
         :param text: String
-        :return: bold tring
+        :return: bold String
         """
         return self.CBOLD + text + self.CEND
 
