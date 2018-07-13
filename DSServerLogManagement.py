@@ -36,6 +36,7 @@ class DSServerLogManagement:
     def add_authenticated_client_connection( self, client_socket, client_address ):
         """
         Add every authenticated client to a list of authenticated clients
+        :param client_address:
         :param Socket client_socket:
         :return: None
         """

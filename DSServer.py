@@ -199,19 +199,8 @@ class DSServer:
             _, username, password, document_name = data.split(',')
 
             if username == self.authentication.get_username() and password == self.authentication.get_password() and document_name == self.authentication.get_document_name():
-                # timestamp = client_pdu.get_time()  # get timestamp
-                # reserved_1 = self.null_byte
-                # reserved_2 = self.null_byte
-                # ACK_data = self.null_byte
-                # checksum = client_pdu.get_checksum(timestamp, ACK_data)
-                # pdu_array = [DSMessageType.CAUTH, timestamp, error_code, DSFlags.finish, reserved_1, reserved_2,
-                #              self.null_byte, ACK_data, checksum]
-                #
-                #
-                # pdu = client_pdu.pack(pdu_array)
-                # client_socket.send(pdu)
-                # self.server_log_manager.add_authenticated_client_connection(client_socket, client_address)
 
+                self.server_log_manager.add_authenticated_client_connection(client_socket, client_address)
                 # Now send the document.txt to the client
                 data_string = self.ds_document.get_document_as_string()  # get the entire document.txt as string
                 data_break_down = self.ds_document.break_data(data_string)
@@ -260,7 +249,7 @@ class DSServer:
 
             reserved_1 = self.null_byte
             reserved_2 = self.null_byte
-            section_id = section_id
+            section_id = self.null_byte
             data = data  # verify if the data is already encoded
             checksum = client_pdu.get_checksum(timestamp, data)
             pdu_array = [DSMessageType.CAUTH, timestamp, error_code, DSFlags.finish, reserved_1, reserved_2, section_id,
@@ -276,11 +265,13 @@ class DSServer:
             ##################################
             client_state.set_state(DSState.AUTHENTICATED)
 
-
-
     def s_edit(self, section_id, client_state, client_pdu, client_socket, client_address, client_error_correction,
                client_error_code=None):
         authenticated_clients = self.server_log_manager.get_authenticated_clients()
+        print('in s_edit')
+        print('authenticated clients: {}'.format(authenticated_clients))
+
+        # verify if the user is authenticated
         if client_socket in authenticated_clients:
             section_id = int(section_id)
             error_code = ''
@@ -376,6 +367,7 @@ class DSServer:
                 token_id = None
                 return issued_token, token_id
 
+        # if the user is not authenticated
         else:
             self.connect(client_state, client_pdu, client_socket, client_address, client_error_correction,
                          DSCode.USER_NOT_AUTHENTICATED)
