@@ -45,6 +45,10 @@ class DSServerResponseProcessor:
         self.client_socket = ''
         self.message_type_index, self.timestamp_index, self.error_code_index, self.flag_index, self.reserved_1_index, self.reserved_2_index, self.section_id_index, self.data_index, self.checksum_index = self.server_processor_pdu.get_pdu_parts_index()
 
+        self.color = Color()
+        self.style = Style()
+        self.error = DSCode()
+
     def process_response(self, response, client_socket, client_obj):
         """
         This is the main response processor
@@ -87,7 +91,11 @@ class DSServerResponseProcessor:
         elif self.error_code == DSCode.USER_NOT_AUTHENTICATED:
             print(color.red(error.dscode_print(self.error_code)))
 
+        elif self.error_code == DSCode.CONNECTED:
+            print('{:^30}'.format(color.yellow(error.dscode_print(self.error_code))))
+
         else:
+            print(color.green(error.dscode_print(self.error_code)))
             pass
 
         if self.response[self.message_type_index] == DSMessageType.CONNECT.decode():

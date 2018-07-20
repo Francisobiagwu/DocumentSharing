@@ -36,6 +36,7 @@ class DSServerLogManagement:
     def add_authenticated_client_connection( self, client_socket, client_address ):
         """
         Add every authenticated client to a list of authenticated clients
+        :param client_address:
         :param Socket client_socket:
         :return: None
         """
@@ -49,6 +50,7 @@ class DSServerLogManagement:
         self.failed_connection += 1
 
     def add_section_owners( self, client_address, section_id ):
+        print('section id type: {}'.format(type(section_id)))
         self.section_owners.update({section_id: client_address})
 
     def update_section_owners( self, client_address ):
