@@ -166,7 +166,7 @@ class DSServer:
         checksum = client_pdu.get_checksum(timestamp, data)
         flag = DSFlags.finish
         if client_error_code is None:
-            error_code = DSCode.OK
+            error_code = DSCode.CONNECTED
         else:
             error_code = client_error_code
 
@@ -193,69 +193,83 @@ class DSServer:
         # verify if the client presented a valid credentials
         # send an ACK to inform the client that they have been authenticated
         print(self.color.green('hey'))
-        _, username, password, document_name = data.split(',')
+
         if client_error_code is None:
             error_code = DSCode.LOGIN_SUCCESS
+            _, username, password, document_name = data.split(',')
+
+            if username == self.authentication.get_username() and password == self.authentication.get_password() and document_name == self.authentication.get_document_name():
+
+                self.server_log_manager.add_authenticated_client_connection(client_socket, client_address)
+                # Now send the document.txt to the client
+                data_string = self.ds_document.get_document_as_string()  # get the entire document.txt as string
+                data_break_down = self.ds_document.break_data(data_string)
+
+                freq_to_send = len(data_break_down)
+                count = 0
+
+                for item in data_break_down:  # we don't care about the document.txt flags about sections taken/free
+                    count += 1
+                    timestamp = client_pdu.get_time()  # get timestamp
+                    error_code = DSCode.LOGIN_SUCCESS  # assign error code
+                    if count == freq_to_send:
+                        flag = DSFlags.finish
+                    else:
+                        flag = DSFlags.more
+
+                    reserved_1 = self.null_byte
+                    reserved_2 = self.null_byte
+                    section_id = str(count - 1).encode()
+                    data = item  # verify if the data is already encoded
+                    checksum = client_pdu.get_checksum(timestamp, data)
+                    pdu_array = [DSMessageType.CAUTH, timestamp, error_code, flag, reserved_1, reserved_2, section_id,
+                                 data,
+                                 checksum]
+                    pdu = client_pdu.pack(pdu_array)
+                    #############################################
+                    # SEND THE DOCUMENT
+                    #############################################
+                    client_socket.send(pdu)
+                    ##################################
+                    # set state#
+                    ##################################
+                    client_state.set_state(DSState.AUTHENTICATED)
+                    print('item : {}'.format(item))
+                    print('pdu before send: {}'.format(pdu))
+
+            else:
+                client_state.CONNECTED
+                print(self.color.red('Client presented wrong credentials'))
+                self.connect(client_state, client_pdu, client_socket, client_address, client_error_correction,
+                             DSCode.LOGIN_NOT_SUCCESS)
         else:
             error_code = client_error_code
-
-        if username == self.authentication.get_username() and password == self.authentication.get_password() and document_name == self.authentication.get_document_name():
             timestamp = client_pdu.get_time()  # get timestamp
             reserved_1 = self.null_byte
             reserved_2 = self.null_byte
-            ACK_data = self.null_byte
-            checksum = client_pdu.get_checksum(timestamp, ACK_data)
-            pdu_array = [DSMessageType.CAUTH, timestamp, error_code, DSFlags.finish, reserved_1, reserved_2,
-                         self.null_byte, ACK_data, checksum]
-
+            section_id = self.null_byte
+            data = data  # verify if the data is already encoded
+            checksum = client_pdu.get_checksum(timestamp, data)
+            pdu_array = [DSMessageType.CAUTH, timestamp, error_code, DSFlags.finish, reserved_1, reserved_2, section_id,
+                         data,
+                         checksum]
+            pdu = client_pdu.pack(pdu_array)
+            #############################################
+            # SEND THE DOCUMENT
+            #############################################
+            client_socket.send(pdu)
             ##################################
             # set state#
             ##################################
             client_state.set_state(DSState.AUTHENTICATED)
-            pdu = client_pdu.pack(pdu_array)
-            client_socket.send(pdu)
-            self.server_log_manager.add_authenticated_client_connection(client_socket, client_address)
-
-            # Now send the document.txt to the client
-            data_string = self.ds_document.get_document_as_string()  # get the entire document.txt as string
-            data_break_down = self.ds_document.break_data(data_string)
-
-            freq_to_send = len(data_break_down)
-            count = 0
-
-            for item in data_break_down:  # we don't care about the document.txt flags about sections taken/free
-                count += 1
-                timestamp = client_pdu.get_time()  # get timestamp
-                error_code = DSCode.LOGIN_SUCCESS  # assign error code
-                if count == freq_to_send:
-                    flag = DSFlags.finish
-                else:
-                    flag = DSFlags.more
-
-                reserved_1 = self.null_byte
-                reserved_2 = self.null_byte
-                section_id = str(count - 1).encode()
-                data = item  # verify if the data is already encoded
-                checksum = client_pdu.get_checksum(timestamp, data)
-                pdu_array = [DSMessageType.CAUTH, timestamp, error_code, flag, reserved_1, reserved_2, section_id, data,
-                             checksum]
-                pdu = client_pdu.pack(pdu_array)
-                #############################################
-                # SEND THE DOCUMENT
-                #############################################
-                client_socket.send(pdu)
-                print('item : {}'.format(item))
-                print('pdu before send: {}'.format(pdu))
-
-        else:
-            client_state.CONNECTED
-            print(self.color.red('Client presented wrong credentials'))
-            self.connect(client_state, client_pdu, client_socket, client_address, client_error_correction,
-                         DSCode.LOGIN_NOT_SUCCESS)
 
     def s_edit(self, section_id, client_state, client_pdu, client_socket, client_address, client_error_correction,
                client_error_code=None):
         authenticated_clients = self.server_log_manager.get_authenticated_clients()
+        print('in s_edit')
+        print('authenticated clients: {}'.format(authenticated_clients))
+
+        # verify if the user is authenticated
         if client_socket in authenticated_clients:
             section_id = int(section_id)
             error_code = ''
@@ -265,6 +279,8 @@ class DSServer:
             else:
                 error_code = error_code
             print(self.ds_document.get_document_sections())
+
+            # if the section id given by the client corresponds to the section id they currently possess
             if section_id in self.ds_document.get_document_sections():
                 print('Before')
                 print(self.ds_document.get_document_sections())
@@ -275,8 +291,6 @@ class DSServer:
                 # find out if the section the user requested for is free.
                 if is_free:
                     print(self.ds_document.get_document_sections())
-                    issued_token = True
-                    token_id = section_id
                     self.server_log_manager.add_section_owners(client_address, section_id)
                     self.ds_document.get_document_sections().update(
                         {section_id: (section_data, False)})  # set flag on data
@@ -304,9 +318,6 @@ class DSServer:
                     # SEND THE DOCUMENT
                     #############################################
                     client_socket.send(pdu)
-
-                    return issued_token, token_id
-
 
                 else:  # data is not free
                     # find out who is the current owner of the document.txt
@@ -345,12 +356,13 @@ class DSServer:
                     token_id = None
                     return issued_token, token_id
 
-            # if the section the client requested for is not valid
+            # if the section id presented by the client is invalid or they don't possess a token for it
             else:
                 issued_token = False
                 token_id = None
                 return issued_token, token_id
 
+        # if the user is not authenticated
         else:
             self.connect(client_state, client_pdu, client_socket, client_address, client_error_correction,
                          DSCode.USER_NOT_AUTHENTICATED)
@@ -359,19 +371,30 @@ class DSServer:
                  client_error_correction,
                  client_error_code=None):
         print('in the server commit section ')
+        print('authenticated clients: {}'.format(self.server_log_manager.get_authenticated_clients()))
+        print('section owners: {}'.format(self.server_log_manager.get_section_owners().values()))
+        print(self.server_log_manager.get_section_owners())
         # we have to verify if the client have token for the section to which they are committing
 
         # if the client exists in the list of authenticated clients and the client possesses the token for the section
-        if client_socket in self.server_log_manager.authenticated_clients and client_socket in self.server_log_manager.get_section_owners().keys():
+        if client_socket in self.server_log_manager.authenticated_clients and client_address in self.server_log_manager.get_section_owners().values():
+            print(self.color.yellow('client possess a token for this commit'))
+            print('client address: {} section id: {}'.format(client_address, section_id))
+            print('key: ', end='')
+            print(self.server_log_manager.get_section_owners().get(section_id))
+            print(type(section_id))
 
-            if section_id == self.server_log_manager.get_section_owners().get(client_socket):
+            if client_address == self.server_log_manager.get_section_owners().get(int(section_id)):
                 print('data {}'.format(data))
                 self.ds_document.update_document(section_id, data)
                 ##################################
                 # set state#
                 ##################################
                 client_state.set_state(DSState.COMMITTING_CHANGES)
+                self.server_log_manager.log(client_address, client_state.get_current_state())
                 #############################################
+                print('authenticated clients: {}'.format(self.server_log_manager.authenticated_clients))
+
                 for clients in self.server_log_manager.authenticated_clients:
                     # send the update to them
                     timestamp = client_pdu.get_time()  # get timestamp
@@ -386,6 +409,7 @@ class DSServer:
                     pdu = client_pdu.pack(pdu_array)
                     client_socket.send(pdu)
                     self.server_log_manager.add_authenticated_client_connection(client_socket, client_address)
+
 
                     # Now send the document.txt to the client
                     data_string = self.ds_document.get_document_as_string()  # get the entire document.txt as string
@@ -421,13 +445,13 @@ class DSServer:
                         # print('item : {}'.format(item))
                         # print('pdu before send: {}'.format(pdu))
             else:
-                self.s_edit(section_id, client_pdu, client_state, client_socket, client_address,
+                self.s_edit(section_id, client_state, client_pdu, client_socket, client_address,
                             DSCode.SECTION_ID_NOT_VALID)
 
 
         # if the client exist in the authenticated client list but the client doesn't possess the token for the section which they are requesting
-
         elif client_socket in self.server_log_manager.get_authenticated_clients() and client_address not in self.server_log_manager.get_section_owners().values():
+
             print(self.color.red('testing'))
             print('testing for the keys')
             x = [value for value in self.server_log_manager.get_section_owners().values()]
@@ -437,6 +461,7 @@ class DSServer:
             print(self.server_log_manager.get_section_owners().keys())
             print(self.server_log_manager.get_section_owners())
             print(self.server_log_manager.get_authenticated_clients())
+            data = self.null_byte
             self.cauth(data, client_state, client_pdu, client_socket, client_address, client_error_correction,
                        DSCode.SECTION_DENIED)
 
@@ -528,4 +553,7 @@ if __name__ == '__main__':
         print(err.args)
         import sys
 
+        sys.exit(1)
+
+    finally:
         sys.exit(1)
