@@ -13,7 +13,7 @@ import threading
 from DSCodes import DSCode
 from DSInput import DSInput
 from DSPdu import DSPdu
-from DSServerResponseProcessor import DSServerResponseProcessor
+from DSServerResponseProcessor import DSClientServerResponseProcessor
 
 
 class DSClient:
@@ -37,7 +37,7 @@ class DSClient:
         self.request_index, self.timestamp_index, self.error_code_index, self.flag_index, self.reserved_1_index, self.reserved_2_index, self.reserved_3_index, self.data_index, self.checksum_index = DSPdu().get_pdu_parts_index()
         self.null_byte = b'\x00'  # used in place of data when is not need to send data during S_DENIED, CAUTH etc
         self.input_processor = DSInput()
-        self.server_response_processor = DSServerResponseProcessor()
+        self.server_response_processor = DSClientServerResponseProcessor()
         has_token = False  # used to track if the client has been issued a token
 
         self.first_message_recvd = False  # used to track if the client have received the first 'CONNECT' message
@@ -107,8 +107,8 @@ class DSClient:
         while True:
             try:
                 pdu = self.__CLIENT__SOCKET.recv(self.__BUFFER_SIZE)
+                # print(pdu)
                 unpacked_pdu = self.client_pdu.unpack(pdu)
-                #print(unpacked_pdu)
                 unpacked_no_pad = self.client_pdu.remove_padding(unpacked_pdu)
                 self.server_response_processor.process_response(unpacked_no_pad, self.__CLIENT__SOCKET, self)
 

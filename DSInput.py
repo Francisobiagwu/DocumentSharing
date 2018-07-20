@@ -53,11 +53,12 @@ class DSInput:
                     print('User input is not valid')
                     continue
 
-            elif array[0] == 'COMMIT' and len(array) == 3:
+            elif array[0] == 'COMMIT' and len(array) >= 3:
                 try:
                     int(array[1])
                     self.reset_user_input()
-                    return array, ','.join(array)
+                    test_string = ','.join(array)
+                    return array, test_string
                 except ValueError as err:
                     print(err.args)
                     print('User input is not valid')
@@ -166,10 +167,18 @@ class DSInput:
         return pdu_array
 
     def commit(self):
+        print('in input commit section')
+        print(self.array[2:])
         data = self.array[2:]  # this will ensure that other sentences separated by comma's are used as data
         # data is retrieved as list, we need to extract it as string
-        data = data[0]
+        string_builder = ''
+        for text in data:
+            string_builder += text
+
+        data = string_builder
         data_array = self.break_data(data)  # this is the section that contains the data
+        print('in the client commit method')
+        print('data to be committed: {}'.format(data_array))
         freq_to_send = len(data_array)  # number of times we will send in order to complete send
         print('after the data is been broken: {}'.format(data_array, freq_to_send))
         count = 0

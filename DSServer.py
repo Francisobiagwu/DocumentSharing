@@ -22,6 +22,7 @@ from DSPdu import DSPdu
 from DSPrintStyle import Color, Style
 from DSServerLogManagement import DSServerLogManagement
 from DSState import DSState
+from DSStringBuilder import DSStringBuilder
 
 
 class DSServer:
@@ -70,6 +71,7 @@ class DSServer:
         authorized = False  # now the client have no authorization
         client_state = DSState()  # create client state object
         client_pdu = DSPdu()  # create pdu object
+        client_string_builder = DSStringBuilder()
         self.__BUFFER_SIZE = client_pdu.get_size()  # set the buffer size
 
         client_error_correction = DSErrorCorrection()
@@ -98,6 +100,7 @@ class DSServer:
             try:
                 pdu = client_socket.recv(self.__BUFFER_SIZE)
                 # print('buffer size: {}'.format(self.__BUFFER_SIZE))
+                print(pdu)
                 unpacked_pdu = client_pdu.unpack(pdu)
                 unpacked_pdu_no_pad = client_pdu.remove_padding(unpacked_pdu)
 
@@ -130,16 +133,18 @@ class DSServer:
                 print(data, flag)
                 print('data before the concatonation: {}'.format(data))
                 print(client_pdu, unpacked_pdu, unpacked_pdu_no_pad)
-                if flag == DSFlags.more:
-                    self.string_builder += data
+
+                if flag == DSFlags.more or flag == DSFlags.begin:
+                    client_string_builder.append(data)
                     print('string after concatenation')
-                    print('string {}'.format(self.string_builder))
+                    print('string {}'.format(client_string_builder.text))
 
                 else:  # flag == DSFlags.finish:
-                    if self.string_builder != '':  # if string builder contains something
-                        data = self.string_builder
+                    if client_string_builder.text != '':  # if client string builder contains something
+                        client_string_builder.append(data)
+                        data = client_string_builder.text
                         print('data: {}'.format(data))
-                        self.string_builder = ''  # reset string builder
+                        client_string_builder.reset()  # reset string builder
 
                     else:
                         # if string builder is None, then data that was sent for commit is equal to the size of struct
@@ -206,16 +211,27 @@ class DSServer:
                 data_break_down = self.ds_document.break_data(data_string)
 
                 freq_to_send = len(data_break_down)
-                count = 0
+                count = 1
 
                 for item in data_break_down:  # we don't care about the document.txt flags about sections taken/free
-                    count += 1
+                    print('count: {}, freq to send: {}'.format(count, freq_to_send))
+
                     timestamp = client_pdu.get_time()  # get timestamp
                     error_code = DSCode.LOGIN_SUCCESS  # assign error code
-                    if count == freq_to_send:
-                        flag = DSFlags.finish
-                    else:
+
+                    if count == 1:
+                        flag = DSFlags.begin
+
+                    elif count < freq_to_send:
                         flag = DSFlags.more
+
+                    elif count == freq_to_send:
+                        flag = DSFlags.finish
+
+                    else:
+                        print("Error have occurred!!!")
+
+                    count += 1
 
                     reserved_1 = self.null_byte
                     reserved_2 = self.null_byte
@@ -330,7 +346,7 @@ class DSServer:
                     else:
                         for key, value in current_section_owners.items():
                             if key == section_id:
-                                data = value.encode() + b' is the current owner'
+                                data = str(value).encode() + b' is the current owner'
                     request = b'S_EDIT'
                     timestamp = client_pdu.get_time()  # get timestamp
                     error_code = DSCode.SECTION_NOT_AVAILABLE  # assign error code
@@ -370,6 +386,8 @@ class DSServer:
     def s_commit(self, section_id, data, client_state, client_pdu, client_socket, client_address,
                  client_error_correction,
                  client_error_code=None):
+
+        section_id = int(section_id)
         print('in the server commit section ')
         print('authenticated clients: {}'.format(self.server_log_manager.get_authenticated_clients()))
         print('section owners: {}'.format(self.server_log_manager.get_section_owners().values()))
@@ -377,15 +395,20 @@ class DSServer:
         # we have to verify if the client have token for the section to which they are committing
 
         # if the client exists in the list of authenticated clients and the client possesses the token for the section
+
         if client_socket in self.server_log_manager.authenticated_clients and client_address in self.server_log_manager.get_section_owners().values():
             print(self.color.yellow('client possess a token for this commit'))
             print('client address: {} section id: {}'.format(client_address, section_id))
-            print('key: ', end='')
+            print('client currently with  the section token : ', end='')
             print(self.server_log_manager.get_section_owners().get(section_id))
             print(type(section_id))
 
+
+            # we send only when the flag is now finish
+
+
             if client_address == self.server_log_manager.get_section_owners().get(int(section_id)):
-                print('data {}'.format(data))
+                print('data: {}'.format(data))
                 self.ds_document.update_document(section_id, data)
                 ##################################
                 # set state#
@@ -395,7 +418,7 @@ class DSServer:
                 #############################################
                 print('authenticated clients: {}'.format(self.server_log_manager.authenticated_clients))
 
-                for clients in self.server_log_manager.authenticated_clients:
+                for auth_client_socket in self.server_log_manager.authenticated_clients:
                     # send the update to them
                     timestamp = client_pdu.get_time()  # get timestamp
                     reserved_1 = self.null_byte
@@ -407,9 +430,9 @@ class DSServer:
                                  self.null_byte, ACK_data, checksum]
 
                     pdu = client_pdu.pack(pdu_array)
-                    client_socket.send(pdu)
+                    print('forwarding updates to : {}'.format(auth_client_socket))
+                    auth_client_socket.send(pdu)
                     self.server_log_manager.add_authenticated_client_connection(client_socket, client_address)
-
 
                     # Now send the document.txt to the client
                     data_string = self.ds_document.get_document_as_string()  # get the entire document.txt as string
