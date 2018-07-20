@@ -73,36 +73,30 @@ class DSClientServerResponseProcessor:
 
         if client_obj.is_authenticated is False and self.error_code == DSCode.LOGIN_SUCCESS and self.flag == DSFlags.begin:
             # we only need to print this once.
-            print('1')
             print(color.red(error.dscode_print(self.error_code)))
             client_obj.is_authenticated = True
 
         elif client_obj.is_authenticated is True and self.error_code != DSCode.LOGIN_SUCCESS:
-            print('2')
             print(color.red('checking this out'))
             print(self.error_code)
             print(color.red(error.dscode_print(self.error_code)))
 
         elif self.error_code == DSCode.LOGIN_NOT_SUCCESS:
-            print('3')
             client_obj.is_authenticated = False
             print(color.red(error.dscode_print(self.error_code)))
 
         elif self.error_code == DSCode.SECTION_DENIED:
-            print('4')
+
             print(color.red(error.dscode_print(self.error_code)))
 
 
         elif self.error_code == DSCode.USER_NOT_AUTHENTICATED:
-            print('5')
             print(color.red(error.dscode_print(self.error_code)))
 
         elif self.error_code == DSCode.CONNECTED:
-            print('6')
             print('{:^30}'.format(color.yellow(error.dscode_print(self.error_code))))
 
         elif self.error_code == DSCode.LOGIN_SUCCESS and self.flag.encode() == DSFlags.begin:
-            print('7')
             print(color.green(error.dscode_print(self.error_code)))
             pass
 
