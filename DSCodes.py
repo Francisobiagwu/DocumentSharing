@@ -7,8 +7,10 @@
 @time: 6/6/18 7:16 PM
 """
 
+
 class DSCode:
     OK = 000
+    CONNECTED = 224
     LOGIN_SUCCESS = 100
     SECTION_RETRIEVED = 101
     COMMIT_SUCCESS = 102
@@ -30,11 +32,8 @@ class DSCode:
     SECTION_REVOKED = 222
     USER_NOT_AUTHENTICATED = 223
 
-
-
-
     def dscode_print(self, code):
-        if code == DSCode.OK:
+        if code == DSCode.CONNECTED:
             return '----Connection Successful----'
 
         elif code == DSCode.LOGIN_SUCCESS:
@@ -58,18 +57,7 @@ class DSCode:
 
         elif code == DSCode.TIMEOUT:
             return '---Server timeout---'
-        # SECTION_DENIED = 111
-        # SECTION_NOT_AVAILABLE = 112
-        # SECTION_ID_NOT_VALID = 113
-        # RELEASE_SECTION = 114
-        # COMMIT_DENIED = 115
-        # LOGOFF = 116
-        # OPERATION_DENIED = 117
-        # RELEASE_SECTION_SUCCESSFUL = 118
-        # RELEASE_SECTION_NOT_SUCCESSFUL = 119
-        # ABORT_SUCCESSFUL = 220
-        # ABORT_NOT_SUCCESSFUL = 221
-        # SECTION_REVOKED = 222
+
         elif code == DSCode.SECTION_DENIED:
             return '---Section denied---'
 
@@ -100,7 +88,6 @@ class DSCode:
 
         elif code == DSCode.ABORT_NOT_SUCCESSFUL:
             return '---Abort not successful---'
-
 
         elif code == DSCode.USER_NOT_AUTHENTICATED:
             return '---User not currently authenticated---'
