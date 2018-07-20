@@ -13,7 +13,7 @@ import threading
 from DSCodes import DSCode
 from DSInput import DSInput
 from DSPdu import DSPdu
-from DSServerResponseProcessor import DSClientServerResponseProcessor
+from DSClientServerResponseProcessor import DSClientServerResponseProcessor
 
 
 class DSClient:
