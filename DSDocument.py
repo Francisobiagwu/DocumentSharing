@@ -118,6 +118,7 @@ class DSDocument:
                 print(err.args)
 
         else:
+            print('no section id was provided!!!')
 
             section_id = int(section_id)
             section_data, _ = self.document_as_dic.get(section_id)
@@ -127,12 +128,7 @@ class DSDocument:
             print('End of test')
             print('section_data {}'.format(section_data))
             self.document_as_dic.update({section_id: (section_data, self.free)})
-            # WE HAVE TO FIND THE KEY SOMEHOW AND THE CONTENT
-            # for item in self.document_as_dic.values(): # we don't care about flags
-            #
-            #     section_data, _ = item
-            #     if
-            #
+
 
 
 
