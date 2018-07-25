@@ -55,21 +55,21 @@ LOGIN
 
 REQUEST DOCUMENT SECTION TO EDIT
 =============================
-
+.. code-block:: python
 
     SECTION, SECTION_ID
 
 
 COMMIT SECTION
 =======================
-
+.. code-block:: python
 
     COMMIT, SECTION_ID, DATA 
 
 
 LOGOFF
 ======================
-
+.. code-block:: python
 
     LOGOFF      
 
