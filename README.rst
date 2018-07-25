@@ -20,6 +20,7 @@ This is an application layer protocol designed using deterministic finite automa
 Getting Started
 ==============
 download from the terminal using:
+.. code-block:: python
 
 
 
@@ -32,7 +33,6 @@ Python3
 
 Installing
 ===========
-
 From the terminal navigate to the folder where Document sharing software resides
 To run server
 =============
