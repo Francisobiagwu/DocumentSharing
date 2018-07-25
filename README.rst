@@ -41,7 +41,7 @@ Start client
     python3 DSClient.py
 
 
-From the client use the following commands to perform the required action
+On the client terminal use the following commands to perform the required action
 
 LOGIN
 ==========
