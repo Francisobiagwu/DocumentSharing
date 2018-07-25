@@ -19,10 +19,7 @@ This is an application layer protocol designed using deterministic finite automa
 
 Getting Started
 ==============
-download from the terminal using:
 .. code-block:: python
-
-
 
     git clone https://github.com/Francisobiagwu/DocumentSharing.git
 
