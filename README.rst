@@ -21,7 +21,7 @@ Getting Started
 ==============
 download from the terminal using:
 
-.. code-block:: python
+
 
     git clone https://github.com/Francisobiagwu/DocumentSharing.git
 
@@ -35,12 +35,12 @@ Installing
 
 From the terminal navigate to the folder where Document sharing software resides
 To run server
-.. code-block:: python
+
 
     python3 DSServer.py
 
 To run client
-.. code-block:: python
+
 
     python3 DSClient.py
 
@@ -55,21 +55,21 @@ LOGIN
 
 REQUEST DOCUMENT SECTION TO EDIT
 =============================
-.. code-block:: python
+
 
     SECTION, SECTION_ID
 
 
 COMMIT SECTION
 =======================
-.. code-block:: python
+
 
     COMMIT, SECTION_ID, DATA 
 
 
 LOGOFF
 ======================
-.. code-block:: python
+
 
     LOGOFF      
 
