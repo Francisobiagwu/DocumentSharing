@@ -35,12 +35,14 @@ Installing
 
 From the terminal navigate to the folder where Document sharing software resides
 To run server
-
+=============
+.. code-block:: python
 
     python3 DSServer.py
 
 To run client
-
+=============
+.. code-block:: python
 
     python3 DSClient.py
 
