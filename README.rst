@@ -28,16 +28,13 @@ Prerequisites
 =============
 Python3 
 
-Installing
-===========
-From the terminal navigate to the folder where Document sharing software resides
-To run server
+Start Server
 =============
 .. code-block:: python
 
     python3 DSServer.py
 
-To run client
+Start client
 =============
 .. code-block:: python
 
