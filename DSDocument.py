@@ -9,7 +9,7 @@
 
 import math
 import os
-
+from DSPrintStyle import Color
 
 class DSDocument:
     __default_path = os.path.abspath("document.txt")
@@ -25,6 +25,8 @@ class DSDocument:
         self.allowed_data_size = allowed_data_size
         self.__set_document_as_string()
         self.__set_document_as_sections()
+        self.document_before_edit = {}
+        self.color = Color()
 
     def __set_document_as_string( self ):
         """
@@ -73,6 +75,7 @@ class DSDocument:
             # print(self.document_as_dic)
             # print(arr)
 
+            self.document_before_edit = self.document_as_dic
             return arr
 
         else:
@@ -114,12 +117,20 @@ class DSDocument:
                 self.__set_document_as_string()
                 self.__set_document_as_sections()
 
+
             except (FileNotFoundError, FileExistsError) as err:
                 print(err.args)
 
-        else:
-            print('no section id was provided!!!')
+            print('------------------------------')
+            print(self.color.biege(str(self.document_as_dic)))
 
+            for item in self.document_as_dic.values():
+                print(self.color.yellow(str(item)))
+
+
+
+        else:
+            print('no data was provided, the client only wants to release the section !!!')
             section_id = int(section_id)
             section_data, _ = self.document_as_dic.get(section_id)
             print('section id {}'.format(section_id))
@@ -128,6 +139,14 @@ class DSDocument:
             print('End of test')
             print('section_data {}'.format(section_data))
             self.document_as_dic.update({section_id: (section_data, self.free)})
+            print('document after update')
+            print(self.document_as_dic.items())
+
+
+            section_data_tuple = self.document_as_dic.get(section_id)
+            section_data = section_data_tuple[0]
+            is_free = section_data_tuple[1]
+            return is_free
 
 
 
@@ -158,4 +177,5 @@ class DSDocument:
 
 
     def release(self, section_id):
-        self.update_document(section_id)
+        is_release_successful = self.update_document(section_id)
+        return is_release_successful
