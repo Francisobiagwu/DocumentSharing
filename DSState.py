@@ -30,6 +30,7 @@ class DSState:
     CONNECTED = 'CONNECTED'
     AUTHENTICATED = 'AUTHENTICATED'
     EDITING_DOCUMENT = 'EDITING_DOCUMENT'
+    RELEASE = 'RELEASING_SECTION'
     BLOCKED = 'BLOCKED'
     COMMITTING_CHANGES = 'COMMITTING_CHANGES'
     CLOSE = 'CLOSE_CONNECTION'
@@ -47,6 +48,10 @@ class DSState:
             self.__states.update({state: value})
 
         self.__current_state = DSState.CONNECTED
+        self.token_issued = False
+        self.received_document = {}
+        self.is_client_alive = False
+        self.is_server_listening = False
 
     def get_states( self ):
         """
@@ -54,6 +59,10 @@ class DSState:
         """
         # print(self.__states)
         return self.__states
+
+
+    def get_token_status(self):
+        return self.token_issued
 
     def get_current_state( self ):
         """
@@ -82,7 +91,6 @@ class DSState:
 
             else:
                 self.__current_state = new_state
-                print('printing current state')
                 print(self.__current_state)
 
                 return True
@@ -90,10 +98,16 @@ class DSState:
             print('state {} not found in states dictionary'.format(new_state))
             return False
 
-    def convert_request( self, message_type ):
+    @staticmethod
+    def convert_request( message_type ):
         """
         converts the messagetype received to figure out the next state the client or the server wishes to transition to
         :return:
         """
         if message_type == DSMessageType.CONNECT:
             return DSState.AUTHENTICATED  #
+
+
+    def set_as_previous_document(self, dictionary):
+        self.received_document = dict(dictionary)
+
