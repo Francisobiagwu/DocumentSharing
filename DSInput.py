@@ -28,6 +28,25 @@ class DSInput:
         self.color = Color()
         self.style = Style()
 
+        self.message_type = ''
+        self.timestamp = ''
+        self.error_code = ''
+        self.flag = ''
+        self.changed_section = ''
+        self.section_id = ''
+        self.reserved_1 = self.null_byte
+        self.reserved_2 = self.null_byte
+        self.reserved_3 = self.null_byte
+
+        self.data = ''
+        self.data_size = ''
+        self.checksum = ''
+
+        self.pdu_array = ''
+
+
+
+
     def get_user_input(self):
         """
         Gets user input and then formats then return them as string arrays
@@ -58,11 +77,19 @@ class DSInput:
                     int(array[1])
                     self.reset_user_input()
                     test_string = ','.join(array)
+                    print('in commit section in dsinput')
+                    print('array: {}'.format(array))
+                    print('string sent: {}'.format(test_string))
                     return array, test_string
                 except ValueError as err:
                     print(err.args)
                     print('User input is not valid')
                     continue
+
+            elif array[0] == 'CREATE' and len(array) == 2: # I will create this functionality later
+                print('this functionality will be created later. As of now, it is non-existent')
+                self.reset_user_input()
+                pass
 
             elif array[0] == 'LOGOFF' and len(array) == 1:
                 self.reset_user_input()
@@ -110,6 +137,9 @@ class DSInput:
         if array[0] == 'LOGIN':
             return self.login()
 
+        elif array[0] == 'CREATE':
+            return self.create()
+
         elif array[0] == 'SECTION':
             return self.section()
 
@@ -126,59 +156,88 @@ class DSInput:
             print('User input not valid')
 
     def login(self):
-        message_type = DSMessageType.CAUTH
-        timestamp = self.ds_pdu.get_time()  # get timestamp
-        error_code = self.ds_code.OK  # assign error code
-        flag = DSFlags.finish
-        reserved_1 = self.null_byte
-        reserved_2 = self.null_byte
-        section_id = self.null_byte
-        data = self.data.encode()  # data should be encoded i.e LOGIN, Admin, root, example1 in bytes
-        checksum = self.ds_pdu.get_checksum(timestamp, data)
-        pdu_array = [message_type, timestamp, error_code, flag, reserved_1, reserved_2, section_id, data, checksum]
+        self.message_type = DSMessageType.CAUTH
+        self.timestamp = self.ds_pdu.get_time()  # get timestamp
+        self.error_code = self.ds_code.OK  # assign error code
+        self.flag = DSFlags.finish
+        self.changed_section = 0
+        self.section_id = 0
+        self.reserved_1 = self.null_byte
+        self.reserved_2 = self.null_byte
+        self.reserved_3 = self.null_byte
+
+        self.data = self.data.encode()  # data should be encoded i.e LOGIN, Admin, root, example1 in bytes
+        self.data_size = len(self.data)
+        self.checksum = self.ds_pdu.get_checksum(self.timestamp, self.data)
+
+        pdu_array = [self.message_type, self.timestamp, self.error_code, self.flag, self.changed_section, self.section_id, self.reserved_1, self.reserved_2,
+                     self.reserved_3,
+                     self.data, self.data_size, self.checksum]
 
         return pdu_array
 
     def section(self):
-        message_type = DSMessageType.S_EDIT
-        timestamp = self.ds_pdu.get_time()  # get timestamp
-        error_code = self.ds_code.OK  # assign error code
-        flag = DSFlags.finish
-        reserved_1 = self.null_byte
-        reserved_2 = self.null_byte
-        section_id = str(self.array[1]).encode()  # obtain the section id and convert to bytes
-        data = self.null_byte
-        checksum = self.ds_pdu.get_checksum(timestamp, data)
-        pdu_array = [message_type, timestamp, error_code, flag, reserved_1, reserved_2, section_id, data, checksum]
-        return pdu_array
+        self.message_type = DSMessageType.S_EDIT
+        self.timestamp = self.ds_pdu.get_time()  # get timestamp
+        self.error_code = self.ds_code.OK  # assign error code
+        self.flag = DSFlags.finish
+        self.reserved_1 = self.null_byte
+        self.reserved_2 = self.null_byte
+        self.reserved_3 = self.null_byte
+        self.section_id = int(self.array[1])  # obtain the section id
+        self.data = self.null_byte
+        self.data_size = len(self.data)
+        self.checksum = self.ds_pdu.get_checksum(self.timestamp, self.data)
+
+        pdu_array = [self.message_type, self.timestamp, self.error_code, self.flag, self.changed_section,
+                     self.section_id,
+                     self.reserved_1, self.reserved_2,
+                     self.reserved_3,
+                     self.data, self.data_size, self.checksum]
+
+
+        return  pdu_array
+
+
+
+    def create(self):
+        pass
+
 
     def release(self):
-        message_type = DSMessageType.S_RELEASE
-        timestamp = self.ds_pdu.get_time()  # get timestamp
-        error_code = self.ds_code.OK  # assign error code
-        flag = DSFlags.finish
-        reserved_1 = self.null_byte
-        reserved_2 = self.null_byte
-        section_id = str(self.array[1]).encode()  # obtain the section id and convert to bytes
-        data = self.null_byte
-        checksum = self.ds_pdu.get_checksum(timestamp, data)
-        pdu_array = [message_type, timestamp, error_code, flag, reserved_1, reserved_2, section_id, data, checksum]
+        self.message_type = DSMessageType.S_RELEASE
+        self.timestamp = self.ds_pdu.get_time()  # get timestamp
+        self.error_code = self.ds_code.OK  # assign error code
+        self.flag = DSFlags.finish
+        self.reserved_1 = self.null_byte
+        self.reserved_2 = self.null_byte
+        self.reserved_3 = self.null_byte
+        self.section_id = int(self.array[1])  # obtain the section id
+        self.data = self.null_byte
+        self.data_size = len(self.data)
+        self.checksum = self.ds_pdu.get_checksum(self.timestamp, self.data)
 
+        pdu_array = [self.message_type, self.timestamp, self.error_code, self.flag, self.changed_section,
+                     self.section_id,
+                     self.reserved_1, self.reserved_2,
+                     self.reserved_3,
+                     self.data, self.data_size, self.checksum]
         return pdu_array
 
     def commit(self):
         print('in input commit section')
         print(self.array[2:])
-        data = self.array[2:]  # this will ensure that other sentences separated by comma's are used as data
+        self.data = self.array[2:]  # this will ensure that other sentences separated by comma's are used as data
         # data is retrieved as list, we need to extract it as string
         string_builder = ''
-        for text in data:
+        for text in self.data:
             string_builder += text
 
-        data = string_builder
-        data_array = self.break_data(data)  # this is the section that contains the data
-        print('in the client commit method')
+        self.data = string_builder
+        data_array = self.break_data(self.data)  # this is the section that contains the data
+        print(self.color.biege('in the client commit method'))
         print('data to be committed: {}'.format(data_array))
+        print(self.color.biege('--------------------------------'))
         freq_to_send = len(data_array)  # number of times we will send in order to complete send
         print('after the data is been broken: {}'.format(data_array, freq_to_send))
         count = 0
@@ -187,47 +246,67 @@ class DSInput:
         for item in data_array:
             count += 1
 
-            message_type = DSMessageType.S_COMMIT
-            timestamp = self.ds_pdu.get_time()  # get timestamp
-            error_code = self.ds_code.OK  # assign error code
+            self.message_type = DSMessageType.S_COMMIT
+            self.timestamp = self.ds_pdu.get_time()  # get timestamp
+            self.error_code = self.ds_code.OK  # assign error code
             # in order to set flags
-            if count < freq_to_send:
-                flag = DSFlags.more
+            if count == 1:
+                self.flag = DSFlags.begin
 
-            if count == freq_to_send:
-                flag = DSFlags.finish
+            elif count < freq_to_send:
+                self.flag = DSFlags.more
 
-            reserved_1 = self.null_byte
-            reserved_2 = self.null_byte
-            section_id = str(self.array[1]).encode()
+            elif count == freq_to_send:
+                self.flag = DSFlags.finish
+
+            else:
+                print('an error has occurred!!!')
+
+
+            self.changed_section = 0
+            self.reserved_1 = self.null_byte
+            self.reserved_2 = self.null_byte
+            self.reserved_3 = self.null_byte
+
+            self.section_id = int(self.array[1])
             try:
-                data = item.encode()
+                self.data = item.encode()
             except AttributeError as err:
-                data = item
+                self.data = item
 
-            checksum = self.ds_pdu.get_checksum(timestamp, data)
-            pdu_array = [message_type, timestamp, error_code, flag, reserved_1, reserved_2, section_id, data,
-                         checksum]
-            # print(pdu_array)
+            self.checksum = self.ds_pdu.get_checksum(self.timestamp, self.data)
+
+            pdu_array = [self.message_type, self.timestamp, self.error_code, self.flag, self.changed_section,
+                         self.section_id,
+                         self.reserved_1, self.reserved_2,
+                         self.reserved_3,
+                         self.data, self.data_size, self.checksum]
+
 
             arr.append(pdu_array)
 
         print(arr)
-
         return arr  # we are only returning array during the commit
 
     def logoff(self):
-        message_type = DSMessageType.ABORT
-        timestamp = self.ds_pdu.get_time()  # get timestamp
-        error_code = self.ds_code.OK  # assign error code
-        flag = DSFlags.finish
-        reserved_1 = self.null_byte
-        reserved_2 = self.null_byte
-        section_id = str(self.array[1]).encode()  # obtain the section id and convert to bytes
-        data = self.null_byte
-        checksum = self.ds_pdu.get_checksum(timestamp, data)
-        pdu_array = [message_type, timestamp, error_code, flag, reserved_1, reserved_2, section_id, data, checksum]
+        self.message_type = DSMessageType.LOGOFF
+        self.timestamp = self.ds_pdu.get_time()  # get timestamp
+        self.error_code = self.ds_code.OK  # assign error code
+        self.flag = DSFlags.finish
+        self.reserved_1 = self.null_byte
+        self.reserved_2 = self.null_byte
+        self.reserved_3 = self.null_byte
+        self.changed_section = 0
+        self.section_id = 0
+        self.data = self.null_byte
+        self.data_size = len(self.data)
+        self.checksum = self.ds_pdu.get_checksum(self.timestamp, self.data)
 
+        pdu_array = [self.message_type, self.timestamp, self.error_code, self.flag, self.changed_section,
+                     self.section_id,
+                     self.reserved_1, self.reserved_2,
+                     self.reserved_3,
+                     self.data, self.data_size, self.checksum]
         return pdu_array
 
     def break_data(self, data):
