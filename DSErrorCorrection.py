@@ -9,6 +9,7 @@
 
 class DSErrorCorrection:
     def __init__(self):
+        self.sent_data_dic = {}
         self.sent_data = {}
         self.key = ''
         self.checksum = ''
@@ -26,7 +27,6 @@ class DSErrorCorrection:
         :param flag: This data tells the client if the server is still sending message
         :return: None
         """
-        self.sent_data_dic = {}
         self.sent_data = data
         self.message_type = message_type
         self.checksum = checksum
