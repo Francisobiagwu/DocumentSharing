@@ -19,28 +19,30 @@ class DSPdu:
     of modifying the changing the size of the pdu, adding additional parts to the pdu also
     """
 
-
     def __init__( self ):
         """
         This is used to initialize the pdu components and their respective sizes
         """
-        ###############################
-        # MESSAGE_TYPE:     12 BYTES  #
-        # TIMESTAMP  :      32 BYTES  #
-        # ERROR CODE :      4 BYTES   #
-        # FLAGS      :      6 BYTES   #
-        # RESERVED 1 :      32 BYTES  #
-        # RESERVED 2 :      32 BYTES  #
-        # SECTION_ID :      32 BYTES  #
-        # DATA       :      100 BYTES #
-        # CHECKSUM   :      8 BYTES   #
-        ###############################
-        # TOTAL      :      658 BYTES #
-        ###############################
+        ####################################
+        # MESSAGE_TYPE    :      12 BYTES  #
+        # TIMESTAMP       :      32 BYTES  #
+        # ERROR CODE      :      4 BYTES   #
+        # FLAGS           :      6 BYTES   #
+        # CHANGED_SECTION :      8 BYTES   #
+        # SECTION_ID      :      8 BYTES   #
+        # RESERVED_1      :      32 BYTES  #
+        # RESERVED_2      :      32 BYTES  #
+        # RESERVED_3      :      32 BYTES  #
+        # DATA            :      100 BYTES #
+        # DATA_SIZE       :      8 BYTES   #
+        # CHECKSUM        :      8 BYTES   #
+        ####################################
+        # TOTAL           :      658 BYTES #
+        ####################################
 
-        array = [('MESSAGE_TYPE', '12s'), ('TIMESTAMP', '32s'), ('ERROR_CODES', 'i'), ('FLAG', '6s'),
-                 ('RESERVED-1', '32s'), ('RESERVED-2', '32s'), ('SECTION-ID', '32s'),
-                 ('DATA', '100s'), ('CHECKSUM', 'q')]
+        array = [('MESSAGE_TYPE', '12s'), ('TIMESTAMP', '32s'), ('ERROR_CODES', 'i'), ('FLAG', '6s'), ('CHANGED_SECTION', 'q'),
+                 ('SECTION-ID', 'q'), ('RESERVED-1', '32s'), ('RESERVED-2', '32s'), ('RESERVED-3', '32s'),
+                 ('DATA', '100s'),('DATA_SIZE', 'q'), ('CHECKSUM', 'q')]
 
         self.pdu_dic = {}
         self.size = None
@@ -63,10 +65,8 @@ class DSPdu:
         # print(self.data_size)
         # print(self.pdu_dic)
         # print(self.size)
+        # print(self.parts_index)
 
-        # for index, pdu_part in enumerate(array):
-        #     print(pdu_part[0], index)
-        #     self.pdu_parts_index.update({pdu_part[0]: index})
 
     def get_pdu_parts_index(self):
         return self.parts_index
@@ -85,10 +85,12 @@ class DSPdu:
         # return all the parameters including the DSCode.OK. The client is only allowed to use DSCode.OK
         return [request, checksum, timestamp, DSCode.OK, data]
 
-    def get_time( self ):
+    @staticmethod
+    def get_time():
         return str(datetime.now()).encode('utf-8')
 
-    def get_checksum( self, timestamp, data ):
+    @staticmethod
+    def get_checksum( timestamp, data ):
         try:
             return binascii.crc32(timestamp + data)
         except TypeError as err:
@@ -135,7 +137,8 @@ class DSPdu:
         """
         return self.pdu_part_list
 
-    def remove_padding( self, unpacked_pdu ):
+    @staticmethod
+    def remove_padding( unpacked_pdu ):
         """
         This processes an unpacked pdu that is padded.
         Then returns the unpacked_pdu without padding
@@ -159,6 +162,6 @@ class DSPdu:
         return array
 
 
-    def get_size( self ):
+    def get_buffer_size( self ):
         return self.size
 
