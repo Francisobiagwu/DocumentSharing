@@ -31,13 +31,18 @@ class DSCode:
     ABORT_NOT_SUCCESSFUL = 221
     SECTION_REVOKED = 222
     USER_NOT_AUTHENTICATED = 223
+    CLIENT_IS_THE_CURRENT_SECTION_OWNER = 224
+    SECTION_TOKEN_NOT_FOUND_SECTION_IS_FREE = 225
+
+
+
 
     def dscode_print(self, code):
         if code == DSCode.CONNECTED:
             return '----Connection Successful----'
 
         elif code == DSCode.LOGIN_SUCCESS:
-            return '----Login Successful----'
+            return '{:^60}'.format('----Login Successful----')
 
         elif code == DSCode.SECTION_RETRIEVED:
             return '----Section successfully retrieved----'
@@ -91,3 +96,12 @@ class DSCode:
 
         elif code == DSCode.USER_NOT_AUTHENTICATED:
             return '---User not currently authenticated---'
+
+        elif code == DSCode.CLIENT_IS_THE_CURRENT_SECTION_OWNER:
+            return '---client is the current section owner for section id----'
+
+        elif code == DSCode.SECTION_TOKEN_NOT_FOUND_SECTION_IS_FREE:
+            return '---client doesn\'t have a token for the section, however, the section is free---'
+
+        else:
+            return 'no printout is created for this error code'
