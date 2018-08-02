@@ -19,10 +19,12 @@ class DSServerLogManagement:
         self.failed_connection = 0
         self.successful_connection = 0
         self.section_owners = {}
+        self.document_sent_to_client = {}
 
     def add_client_connection( self, client_socket, client_address ):
         """
         Add every connected client socket to a list of connected clients
+        :param client_address:
         :param Socket client_socket:
         :return: None
         """
@@ -53,8 +55,16 @@ class DSServerLogManagement:
         print('section id type: {}'.format(type(section_id)))
         self.section_owners.update({section_id: client_address})
 
-    def update_section_owners( self, client_address ):
-        del self.section_owners[client_address]
+    def update_section_owners( self, client_address, section_id):
+        section_id = int(section_id)
+        if client_address in self.get_section_owners().values():
+            if client_address == self.get_section_owners().get(section_id):
+                print('Before update: {}'.format(self.section_owners))
+                del self.section_owners[section_id]
+                print('After the update {}'.format(self.section_owners))
+
+        else:
+            pass
 
     def get_section_owners( self ):
         return self.section_owners
@@ -62,6 +72,7 @@ class DSServerLogManagement:
     def remove_client_connection( self, client_socket, client_address ):
         """
         Once the client disconnects, remove the client from connected_client list
+        :param client_address:
         :param Socket client_socket:
         :return: None
         """
@@ -76,6 +87,7 @@ class DSServerLogManagement:
         """
         When an authenticated client connection is no longer authenticated, remove from authenticated
         list
+        :param client_address:
         :param Socket client_socket:
         :return: None
         """
@@ -94,12 +106,12 @@ class DSServerLogManagement:
     def get_no_failed_connections( self ):
         return self.failed_connection
 
-    def log( self, client_address, state ):
+    @staticmethod
+    def log( client_address, state ):
         """
-        Logging requires the client's address, timestamp, and the event that occured
+        Logging requires the client's address, timestamp, and the event that occurred
         :param client_address:
         :param state:
-        :param text_to_write:
         :return:
         """
         date = str(datetime.now())
@@ -109,7 +121,8 @@ class DSServerLogManagement:
             file.write(str_to_write)
 
 
-    def log_server_start(self, str_to_write):
+    @staticmethod
+    def log_server_start( str_to_write ):
         date = str(datetime.now())
         path = 'serverlog.txt'
         with open(path, 'a') as file:
