@@ -48,6 +48,8 @@ LOGIN
 .. code-block:: python
 
     LOGIN, USERNAME, PASSWORD, DOCUMENT_NAME 
+    
+ To login, use: LOGIN, Admin, root, document
 
 REQUEST DOCUMENT SECTION TO EDIT
 =============================
