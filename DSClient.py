@@ -23,7 +23,7 @@ class DSClient:
     to be started first before starting the client object
     """
     __BUFFER_SIZE = None
-    __PORT = 5001
+    __PORT = 5005
     __TCP_IP = '127.0.0.1'
     __CLIENT__SOCKET = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     placement = 0
@@ -92,6 +92,10 @@ class DSClient:
                 print(pdu_array)
                 pdu = self.client_pdu.pack(pdu_array)
                 self.__CLIENT__SOCKET.send(pdu)  # send
+
+            if array[0] == "LOGOFF":
+                self.server_alive = False
+                os._exit(-1)
 
     def receiving_thread( self ):
         """

@@ -31,7 +31,7 @@ class DSServer:
     Used to create our server object
     """
     __BUFFER_SIZE = None
-    __PORT = 5001
+    __PORT = 5005
     __TCP_IP = '127.0.0.1'
     __SERVER_SOCKET = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     __username = 'Admin'
@@ -67,7 +67,12 @@ class DSServer:
             self.server_log_manager.add_client_connection(client_socket, client_address)
             print('connected to: {}'.format(self.color.green(str(client_address))))
 
-            c_thread = threading.Thread(target=self.client_thread, args=(client_socket, client_address)).start()
+            try:
+                c_thread = threading.Thread(target=self.client_thread, args=(client_socket, client_address)).start()
+            except (OSError) as err:
+                print("Thread:  ", c_thread.__name__, "CLOSED")
+            
+            
 
     def client_thread( self, client_socket, client_address ):
         # create pdu object for the client, this happens only once for each client
@@ -178,6 +183,7 @@ class DSServer:
                 self.release(section_id, client_pdu, client_state, client_socket, client_address)
 
             elif message_type == DSMessageType.LOGOFF:
+                client_state.is_client_alive = False
                 self.close(client_pdu, client_state, client_socket, client_address)
 
 
@@ -669,6 +675,7 @@ class DSServer:
 
     @staticmethod
     def close( client_pdu, client_state, client_socket, client_address ):
+        print("CLOSING CLIENT'S CONNECTION: ")
         client_state.is_alive = False
         client_socket.close()
         client_state.set_state(DSState.CLOSE)
